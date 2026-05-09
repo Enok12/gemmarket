@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { getUserFromRequest } from '@/lib/auth'
@@ -58,7 +59,7 @@ export async function PATCH(req, { params }) {
 
     // Reset to PENDING if owner changes content (needs re-approval)
     const contentChanged = parsed.data.title || parsed.data.description || parsed.data.price
-    
+
     const { images, ...listingFields } = parsed.data
 
 const updated = await prisma.listing.update({

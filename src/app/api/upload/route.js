@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic'
 import { getUserFromRequest } from '@/lib/auth'
 import { uploadImage } from '@/lib/cloudinary'
 import { apiSuccess, apiError } from '@/lib/utils'
