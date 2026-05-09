@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum ListingStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model User {
+  id        String    @id @default(cuid())
+  name      String
+  email     String    @unique
+  password  String
+  role      Role      @default(USER)
+  createdAt DateTime  @default(now())
+  listings  Listing[]
+}
+
+model Listing {
+  id                 String        @id @default(cuid())
+  title              String
+  price              Float
+  gemType            String
+  carat              Float
+  color              String
+  clarity            String
+  cut                String?
+  origin             String
+  description        String        @db.Text
+  whatsappNumber     String
+  location           String
+  isCertified        Boolean       @default(false)
+  certificationImage String?
+  status             ListingStatus @default(PENDING)
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  userId             String
+  user               User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  images             Image[]
+  tracking           Tracking?
+}
+
+model Image {
+  id        String  @id @default(cuid())
+  listingId String
+  imageUrl  String
+  publicId  String?
+  listing   Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+}
+
+model Tracking {
+  id             String  @id @default(cuid())
+  listingId      String  @unique
+  whatsappClicks Int     @default(0)
+  listing        Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+}
