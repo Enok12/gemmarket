@@ -250,4 +250,4 @@ Or deploy to Vercel:
 npx vercel --prod
 ```
 
-> Add all `.env` variables to Vercel → Settings → Environment Variables
+> Add all `.env` variables to Vercel → Settings → Environment Variables - STAGING
