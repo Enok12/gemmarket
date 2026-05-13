@@ -56,7 +56,7 @@ export default function LoginPage() {
             <Gem size={22} className="text-white" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900">Welcome back</h1>
-          <p className="text-gray-500 mt-1 text-sm">Sign in to your GemMarket account</p>
+          <p className="text-gray-500 mt-1 text-sm">Sign in to your GGMP account</p>
         </div>
 
         <div className="bg-white rounded-2xl border border-gray-200 p-8">

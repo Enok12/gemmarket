@@ -41,7 +41,7 @@ export default function RegisterPage() {
       const result = await res.json()
       if (result.success) {
         login(result.data.user, result.data.token)
-        toast.success('Account created! Welcome to GemMarket.')
+        toast.success('Account created! Welcome to GGMP.')
         router.push('/')
       } else {
         toast.error(result.error || 'Registration failed')
@@ -61,7 +61,7 @@ export default function RegisterPage() {
             <Gem size={22} className="text-white" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900">Create your account</h1>
-          <p className="text-gray-500 mt-1 text-sm">Join GemMarket and start selling today</p>
+          <p className="text-gray-500 mt-1 text-sm">Join GGMP and start selling today</p>
         </div>
 
         <div className="bg-white rounded-2xl border border-gray-200 p-8">

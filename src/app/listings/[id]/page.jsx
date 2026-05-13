@@ -27,7 +27,7 @@ export async function generateMetadata({ params }) {
   const listing = await getListing(params.id)
   if (!listing) return { title: 'Listing not found' }
   return {
-    title: `${listing.title} – GemMarket`,
+    title: `${listing.title} – GGMP`,
     description: listing.description.slice(0, 160),
   }
 }
@@ -188,7 +188,7 @@ export default async function ListingDetailPage({ params }) {
           <li>Always meet in a safe, public location when buying in person</li>
           <li>Request a gemological certificate before any large purchase</li>
           <li>Never send money in advance before inspecting the gemstone</li>
-          <li>GemMarket does not handle payments — transact at your own discretion</li>
+          <li>GGMP does not handle payments — transact at your own discretion</li>
         </ul>
       </div>
     </div>

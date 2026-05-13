@@ -28,7 +28,7 @@ export default function Navbar() {
             <div className="w-8 h-8 bg-gem-600 rounded-lg flex items-center justify-center">
               <Gem size={16} className="text-white" />
             </div>
-            <span className="text-lg">GemMarket</span>
+            <span className="text-lg">GGMP</span>
           </Link>
 
           {/* Desktop links */}

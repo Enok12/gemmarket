@@ -54,14 +54,14 @@ export default async function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 bg-gem-50 text-gem-700 text-sm font-medium px-3 py-1.5 rounded-full mb-6">
-              <Star size={13} /> Sri Lanka's #1 gemstone marketplace
+              <Star size={13} /> World's #1 gemstone marketplace
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight mb-5">
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight mb-5">
               Find rare gemstones,<br />
               <span className="text-gem-600">direct from the source</span>
             </h1>
             <p className="text-lg text-gray-600 mb-8 max-w-2xl">
-              Browse certified rubies, sapphires, emeralds and more from verified sellers. Contact directly via WhatsApp — no middleman.
+              We connect you, to the global market place and make your future success. GGMP Global Gem Market Place
             </p>
 
             <form action="/listings" method="GET" className="flex gap-3 max-w-xl">
