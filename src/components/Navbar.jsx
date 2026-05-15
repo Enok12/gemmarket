@@ -129,12 +129,12 @@ export default function Navbar() {
           </div>
 
           {/* Mobile toggle */}
-          <button
+          {/* <button
             className="md:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100"
             onClick={() => setMobileOpen(!mobileOpen)}
           >
             {mobileOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
+          </button> */}
         </div>
       </div>
 
