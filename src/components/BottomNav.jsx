@@ -7,16 +7,15 @@ import {
   Home, ShoppingBag, Tag, User, LayoutDashboard,
   ShieldCheck, LogOut, Search
 } from 'lucide-react'
+import { useLogout } from '@/hooks/useLogout'
+
 
 export default function BottomNav() {
   const { user, isAdmin, logout, isLoading } = useAuth()
   const pathname = usePathname()
   const router   = useRouter()
+  const { confirmLogout } = useLogout()
 
-  function handleLogout() {
-    logout()
-    router.push('/')
-  }
 
   function isActive(href) {
     if (href === '/') return pathname === '/'
@@ -38,7 +37,7 @@ export default function BottomNav() {
     { label: 'Listings',  icon: <Search size={20} />,          href: '/listings'  },
     { label: 'Sell',      icon: <Tag size={22} />,              href: '/create',   center: true },
     { label: 'Dashboard', icon: <LayoutDashboard size={20} />, href: '/dashboard' },
-    { label: 'Logout',    icon: <LogOut size={20} />,          action: handleLogout },
+    { label: 'Logout',    icon: <LogOut size={20} />,          action: confirmLogout },
   ]
 
   const adminItems = [
@@ -46,7 +45,7 @@ export default function BottomNav() {
     { label: 'Listings', icon: <Search size={20} />,       href: '/listings' },
     { label: 'Sell',     icon: <Tag size={22} />,           href: '/create', center: true },
     { label: 'Admin',    icon: <ShieldCheck size={20} />,  href: '/admin'  },
-    { label: 'Logout',   icon: <LogOut size={20} />,       action: handleLogout },
+    { label: 'Logout',   icon: <LogOut size={20} />,       action: confirmLogout },
   ]
 
   const items = !user ? guestItems : isAdmin ? adminItems : sellerItems

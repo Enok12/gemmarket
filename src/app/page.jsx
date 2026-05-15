@@ -146,7 +146,7 @@ export default async function HomePage() {
             <p className="text-md text-gray-600 mb-2 max-w-2xl">
               We connect you, to the global market place and make your future success. GGMP Global Gem Market Place            </p>
             <p className="text-base font-semibold text-gem-700 mb-8">
-              GGMP — Global Gem Market Place
+              GGMP — Global Gemstone Market Place
             </p>
 
             <form action="/listings" method="GET" className="flex gap-3 max-w-xl">
@@ -162,22 +162,7 @@ export default async function HomePage() {
               </button>
             </form>
 
-            <div className="flex flex-wrap gap-6 mt-10">
-              <div>
-                <div className="text-2xl font-bold text-gray-900">{stats.listingCount}+</div>
-                <div className="text-sm text-gray-500">Active listings</div>
-              </div>
-              <div className="w-px bg-gray-200" />
-              <div>
-                <div className="text-2xl font-bold text-gray-900">{stats.userCount}+</div>
-                <div className="text-sm text-gray-500">Verified sellers</div>
-              </div>
-              <div className="w-px bg-gray-200" />
-              <div>
-                <div className="text-2xl font-bold text-gray-900">24 hr</div>
-                <div className="text-sm text-gray-500">Approval time</div>
-              </div>
-            </div>
+      
           </div>
 
           {/* Right — GGMP logo, hidden on mobile */}
@@ -185,8 +170,8 @@ export default async function HomePage() {
             <Image
               src="https://res.cloudinary.com/dapowzg6d/image/upload/v1778814576/cc0f0a63-9754-45ca-b547-3cb0f0a98e02_x6mckj.jpg"
               alt="GGMP Global Gem Market Place"
-              width={500}
-              height={500}
+              width={400}
+              height={400}
               className="object-contain drop-shadow-2xl"
               priority
             />
@@ -221,7 +206,7 @@ export default async function HomePage() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-5 gap-2 sm:gap-4">
           {CATEGORIES.map((cat) => (
             <Link
               key={cat.name}
@@ -240,12 +225,12 @@ export default async function HomePage() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 
               {/* Label */}
-              <div className="absolute bottom-0 left-0 right-0 p-3">
-                <p className="text-white font-semibold text-sm">{cat.name}</p>
-                {cat.count > 0 && (
-                  <p className="text-white/70 text-xs mt-0.5">{cat.count} listings</p>
-                )}
-              </div>
+            <div className="absolute bottom-0 left-0 right-0 p-1.5 sm:p-3">
+              <p className="text-white font-semibold text-xs sm:text-sm">{cat.name}</p>
+              {cat.count > 0 && (
+                <p className="text-white/70 text-xs mt-0.5 hidden sm:block">{cat.count} listings</p>
+              )}
+            </div>
             </Link>
           ))}
         </div>

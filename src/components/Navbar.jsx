@@ -6,6 +6,8 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
 import { Gem, Menu, X, LogOut, LayoutDashboard, ShieldCheck, PlusCircle, ShoppingBag, Tag } from 'lucide-react'
+import { useLogout } from '@/hooks/useLogout'
+
 
 export default function Navbar() {
   const { user, logout, isAdmin } = useAuth()
@@ -13,11 +15,8 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen]     = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
 
-  function handleLogout() {
-    logout()
-    router.push('/')
-    setUserMenuOpen(false)
-  }
+  const { confirmLogout } = useLogout()
+
 
   const sellHref = user ? '/create' : '/register'
 
@@ -43,10 +42,11 @@ export default function Navbar() {
             className="object-contain"
             priority
           />
-          <span className="text-lg font-semibold text-gray-900">GGMP - Global Gem Marketplace</span>
+          <span className="text-lg font-semibold text-gray-900 hidden lg:block">GGMP - Global Gem Marketplace</span>
+          <span className="text-lg font-semibold text-gray-900 lg:hidden">GGMP</span>
         </Link>
           {/* Desktop links */}
-          <div className="hidden md:flex items-center gap-3">
+            <div className="flex items-center gap-2">
 
             {/* Buy button */}
             <Link
@@ -67,7 +67,7 @@ export default function Navbar() {
             </Link>
 
             {user ? (
-              <div className="flex items-center gap-3 ml-2">
+              <div className="hidden lg:flex items-center gap-3 ml-2">
                 <Link
                   href="/create"
                   className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors"
@@ -102,7 +102,7 @@ export default function Navbar() {
                         </Link>
                       )}
                       <hr className="my-1 border-gray-100" />
-                      <button onClick={handleLogout}
+                      <button onClick={confirmLogout}
                         className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50">
                         <LogOut size={14} /> Log out
                       </button>
@@ -111,12 +111,12 @@ export default function Navbar() {
                 </div>
               </div>
             ) : (
-              <div className="flex items-center gap-2 ml-2">
+              <div className="hidden lg:flex items-center gap-2 ml-2">
                 <Link
                   href="/login"
-                  className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 transition-colors"
+                  className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 transition-colors" 
                 >
-                  Log in
+                  Log inn
                 </Link>
                 {/* <Link
                   href="/register"
