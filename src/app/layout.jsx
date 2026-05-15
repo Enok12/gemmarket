@@ -13,6 +13,14 @@ export const metadata = {
   description: 'Buy and sell rare gemstones directly from verified sellers. Browse rubies, sapphires, emeralds and more.',
 }
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+}
+
+
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">

@@ -62,7 +62,7 @@ function ListingsContent() {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900 mb-1">
-          {activeGemType ? `${activeGemType} Listings` : 'Browse Gemstones'}
+          {activeGemType ? `${activeGemType} Listings` : 'Browse Here'}
         </h1>
         <p className="text-sm text-gray-500">
           {loading ? 'Loading…' : `${pagination?.total ?? 0} listings found`}

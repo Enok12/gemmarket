@@ -62,5 +62,5 @@
 
 /* iPhone home indicator safe area */
 .pb-safe {
-  padding-bottom: env(safe-area-inset-bottom);
+  padding-bottom: max(env(safe-area-inset-bottom), 8px);
 }

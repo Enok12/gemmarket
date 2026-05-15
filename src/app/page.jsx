@@ -141,7 +141,7 @@ export default async function HomePage() {
             </div>
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight mb-5">
               Find rare gemstones,<br />
-              <span className="text-gem-600">direct from the source</span>
+              <span className="text-gem-600">Direct from the source</span>
             </h1>
             <p className="text-md text-gray-600 mb-2 max-w-2xl">
               We connect you, to the global market place and make your future success. GGMP Global Gem Market Place            </p>
@@ -198,7 +198,7 @@ export default async function HomePage() {
       </section> */}
 
       {/* Categories grid */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 md:py-12">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 md:py-12">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-gray-900">Shop by gemstone</h2>
           <Link href="/listings" className="flex items-center gap-1 text-sm text-gem-600 hover:text-gem-800 font-medium">

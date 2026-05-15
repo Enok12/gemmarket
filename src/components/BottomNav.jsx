@@ -51,9 +51,9 @@ export default function BottomNav() {
   const items = !user ? guestItems : isAdmin ? adminItems : sellerItems
 
   return (
-    <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-[0_-2px_10px_rgba(0,0,0,0.08)] pb-safe">
-      <div className="flex items-end justify-around px-2 h-16">
-        {items.map((item) => {
+    <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-[0_-2px_10px_rgba(0,0,0,0.08)]" style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 0px)' }}>
+        <div className="flex items-end justify-around px-2 h-16">
+            {items.map((item) => {
           const active = item.href ? isActive(item.href) : false
 
           // ── Center Sell button ──
