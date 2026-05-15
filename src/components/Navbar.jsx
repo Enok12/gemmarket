@@ -4,12 +4,12 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
-import { Gem, Menu, X, LogOut, LayoutDashboard, ShieldCheck, PlusCircle } from 'lucide-react'
+import { Gem, Menu, X, LogOut, LayoutDashboard, ShieldCheck, PlusCircle, ShoppingBag, Tag } from 'lucide-react'
 
 export default function Navbar() {
   const { user, logout, isAdmin } = useAuth()
   const router = useRouter()
-  const [mobileOpen, setMobileOpen]   = useState(false)
+  const [mobileOpen, setMobileOpen]     = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
 
   function handleLogout() {
@@ -17,6 +17,8 @@ export default function Navbar() {
     router.push('/')
     setUserMenuOpen(false)
   }
+
+  const sellHref = user ? '/create' : '/register'
 
   return (
     <nav className="sticky top-0 z-50 bg-white border-b border-gray-200">
@@ -28,22 +30,36 @@ export default function Navbar() {
             <div className="w-8 h-8 bg-gem-600 rounded-lg flex items-center justify-center">
               <Gem size={16} className="text-white" />
             </div>
-            <span className="text-lg">GGMP</span>
+            <span className="text-lg">GGMP - Global Gem Marketplace</span>
           </Link>
 
           {/* Desktop links */}
-          <div className="hidden md:flex items-center gap-6">
-            <Link href="/listings" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
-              Browse Gems
+          <div className="hidden md:flex items-center gap-3">
+
+            {/* Buy button */}
+            <Link
+              href="/listings"
+              className="flex items-center gap-2 px-4 py-2 border border-gem-600 text-gem-600 text-sm font-medium rounded-lg hover:bg-gem-50 transition-colors"
+            >
+              <ShoppingBag size={15} />
+              Buy
             </Link>
-            <Link href="/listings?certified=true" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
-              Certified
+
+            {/* Sell button */}
+            <Link
+              href={sellHref}
+              className="flex items-center gap-2 px-4 py-2 bg-gem-600 text-white text-sm font-medium rounded-lg hover:bg-gem-700 transition-colors"
+            >
+              <Tag size={15} />
+              Sell
             </Link>
 
             {user ? (
-              <div className="flex items-center gap-3">
-                <Link href="/create"
-                  className="flex items-center gap-2 px-4 py-2 bg-gem-600 text-white text-sm font-medium rounded-lg hover:bg-gem-700 transition-colors">
+              <div className="flex items-center gap-3 ml-2">
+                <Link
+                  href="/create"
+                  className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors"
+                >
                   <PlusCircle size={15} /> Post a Listing
                 </Link>
 
@@ -83,15 +99,19 @@ export default function Navbar() {
                 </div>
               </div>
             ) : (
-              <div className="flex items-center gap-2">
-                <Link href="/login"
-                  className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 transition-colors">
+              <div className="flex items-center gap-2 ml-2">
+                <Link
+                  href="/login"
+                  className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 transition-colors"
+                >
                   Log in
                 </Link>
-                <Link href="/register"
-                  className="px-4 py-2 bg-gem-600 text-white text-sm font-medium rounded-lg hover:bg-gem-700 transition-colors">
-                  Sign up free
-                </Link>
+                {/* <Link
+                  href="/register"
+                  className="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  Sign up
+                </Link> */}
               </div>
             )}
           </div>
@@ -109,19 +129,50 @@ export default function Navbar() {
       {/* Mobile menu */}
       {mobileOpen && (
         <div className="md:hidden bg-white border-t border-gray-200 px-4 py-3 space-y-2">
-          <Link href="/listings" className="block py-2 text-sm text-gray-700" onClick={() => setMobileOpen(false)}>Browse Gems</Link>
-          <Link href="/listings?certified=true" className="block py-2 text-sm text-gray-700" onClick={() => setMobileOpen(false)}>Certified Only</Link>
+
+          {/* Buy and Sell prominent buttons */}
+          <div className="flex gap-2 pb-2 border-b border-gray-100">
+            <Link
+              href="/listings"
+              onClick={() => setMobileOpen(false)}
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 border border-gem-600 text-gem-600 text-sm font-medium rounded-lg hover:bg-gem-50 transition-colors"
+            >
+              <ShoppingBag size={15} /> Buy
+            </Link>
+            <Link
+              href={sellHref}
+              onClick={() => setMobileOpen(false)}
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-gem-600 text-white text-sm font-medium rounded-lg hover:bg-gem-700 transition-colors"
+            >
+              <Tag size={15} /> Sell
+            </Link>
+          </div>
+
           {user ? (
             <>
-              <Link href="/create" className="block py-2 text-sm text-gem-600 font-medium" onClick={() => setMobileOpen(false)}>+ Post a Listing</Link>
-              <Link href="/dashboard" className="block py-2 text-sm text-gray-700" onClick={() => setMobileOpen(false)}>My Dashboard</Link>
-              {isAdmin && <Link href="/admin" className="block py-2 text-sm text-gray-700" onClick={() => setMobileOpen(false)}>Admin Panel</Link>}
-              <button onClick={handleLogout} className="block w-full text-left py-2 text-sm text-red-600">Log out</button>
+              <Link href="/create" className="block py-2 text-sm text-gray-700" onClick={() => setMobileOpen(false)}>
+                + Post a Listing
+              </Link>
+              <Link href="/dashboard" className="block py-2 text-sm text-gray-700" onClick={() => setMobileOpen(false)}>
+                My Dashboard
+              </Link>
+              {isAdmin && (
+                <Link href="/admin" className="block py-2 text-sm text-gray-700" onClick={() => setMobileOpen(false)}>
+                  Admin Panel
+                </Link>
+              )}
+              <button onClick={handleLogout} className="block w-full text-left py-2 text-sm text-red-600">
+                Log out
+              </button>
             </>
           ) : (
             <>
-              <Link href="/login" className="block py-2 text-sm text-gray-700" onClick={() => setMobileOpen(false)}>Log in</Link>
-              <Link href="/register" className="block py-2 text-sm text-gem-600 font-medium" onClick={() => setMobileOpen(false)}>Sign up free</Link>
+              <Link href="/login" className="block py-2 text-sm text-gray-700" onClick={() => setMobileOpen(false)}>
+                Log in
+              </Link>
+              {/* <Link href="/register" className="block py-2 text-sm text-gray-700" onClick={() => setMobileOpen(false)}>
+                Sign up free
+              </Link> */}
             </>
           )}
         </div>

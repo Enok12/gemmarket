@@ -19,7 +19,7 @@ const TABS = [
 ]
 
 export default function AdminPage() {
-  const { user, token, isAdmin } = useAuth()
+const { user, token, isAdmin, isLoading } = useAuth()
   const router = useRouter()
 
   const [listings, setListings] = useState([])
@@ -31,11 +31,11 @@ export default function AdminPage() {
   })
 
   useEffect(() => {
-    if (!user)    { router.push('/login');  return }
-    if (!isAdmin) { router.push('/');       return }
-    loadAll()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, isAdmin])
+  if (isLoading) return
+  if (!user)     { router.push('/login'); return }
+  if (!isAdmin)  { router.push('/');      return }
+  loadAll()
+}, [user, isAdmin, isLoading])
 
   // Reload listings whenever tab changes (after initial load)
   useEffect(() => {
