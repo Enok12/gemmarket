@@ -89,7 +89,7 @@ export default async function HomePage() {
     <div>
       {/* Hero */}
       <section className="bg-white border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 md:py-24">
           {/* <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 bg-gem-50 text-gem-700 text-sm font-medium px-3 py-1.5 rounded-full mb-6">
               <Star size={13} /> World's #1 gemstone marketplace
