@@ -198,7 +198,7 @@ export default async function HomePage() {
       </section> */}
 
       {/* Categories grid */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 md:py-12">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-gray-900">Shop by gemstone</h2>
           <Link href="/listings" className="flex items-center gap-1 text-sm text-gem-600 hover:text-gem-800 font-medium">
