@@ -90,7 +90,7 @@ export default async function HomePage() {
       {/* Hero */}
       <section className="bg-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
-          <div className="max-w-3xl">
+          {/* <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 bg-gem-50 text-gem-700 text-sm font-medium px-3 py-1.5 rounded-full mb-6">
               <Star size={13} /> World's #1 gemstone marketplace
             </div>
@@ -131,7 +131,67 @@ export default async function HomePage() {
                 <div className="text-sm text-gray-500">Approval time</div>
               </div>
             </div>
+          </div> */}
+
+          <div className="flex items-center justify-between gap-8">
+          {/* Left — text */}
+          <div className="max-w-2xl">
+            <div className="inline-flex items-center gap-2 bg-gem-50 text-gem-700 text-sm font-medium px-3 py-1.5 rounded-full mb-6">
+              <Star size={13} /> World’s 1# Online Gemstone Marketplace
+            </div>
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight mb-5">
+              Find rare gemstones,<br />
+              <span className="text-gem-600">direct from the source</span>
+            </h1>
+            <p className="text-md text-gray-600 mb-2 max-w-2xl">
+              We connect you, to the global market place and make your future success. GGMP Global Gem Market Place            </p>
+            <p className="text-base font-semibold text-gem-700 mb-8">
+              GGMP — Global Gem Market Place
+            </p>
+
+            <form action="/listings" method="GET" className="flex gap-3 max-w-xl">
+              <div className="relative flex-1">
+                <Search size={17} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <input name="search" type="text"
+                  placeholder="Search rubies, sapphires, emeralds…"
+                  className="w-full pl-10 pr-4 py-3 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gem-300 bg-gray-50"
+                />
+              </div>
+              <button type="submit" className="px-6 py-3 bg-gem-600 text-white font-medium text-sm rounded-xl hover:bg-gem-700 transition-colors">
+                Search
+              </button>
+            </form>
+
+            <div className="flex flex-wrap gap-6 mt-10">
+              <div>
+                <div className="text-2xl font-bold text-gray-900">{stats.listingCount}+</div>
+                <div className="text-sm text-gray-500">Active listings</div>
+              </div>
+              <div className="w-px bg-gray-200" />
+              <div>
+                <div className="text-2xl font-bold text-gray-900">{stats.userCount}+</div>
+                <div className="text-sm text-gray-500">Verified sellers</div>
+              </div>
+              <div className="w-px bg-gray-200" />
+              <div>
+                <div className="text-2xl font-bold text-gray-900">24 hr</div>
+                <div className="text-sm text-gray-500">Approval time</div>
+              </div>
+            </div>
           </div>
+
+          {/* Right — GGMP logo, hidden on mobile */}
+          <div className="hidden lg:flex shrink-0 items-center justify-center">
+            <Image
+              src="https://res.cloudinary.com/dapowzg6d/image/upload/v1778814576/cc0f0a63-9754-45ca-b547-3cb0f0a98e02_x6mckj.jpg"
+              alt="GGMP Global Gem Market Place"
+              width={500}
+              height={500}
+              className="object-contain drop-shadow-2xl"
+              priority
+            />
+          </div>
+        </div>
         </div>
       </section>
 

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
 import { Gem, Menu, X, LogOut, LayoutDashboard, ShieldCheck, PlusCircle, ShoppingBag, Tag } from 'lucide-react'
@@ -26,13 +27,24 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
 
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 font-semibold text-gray-900">
+          {/* <Link href="/" className="flex items-center gap-2 font-semibold text-gray-900">
             <div className="w-8 h-8 bg-gem-600 rounded-lg flex items-center justify-center">
               <Gem size={16} className="text-white" />
             </div>
             <span className="text-lg">GGMP - Global Gem Marketplace</span>
-          </Link>
+          </Link>  */}
 
+         <Link href="/" className="flex items-center gap-2">
+          <Image
+            src="https://res.cloudinary.com/dapowzg6d/image/upload/v1778816597/Copilot_20260515_104255_a6in1o.png"
+            alt="GGMP Logo"
+            width={70}
+            height={70}
+            className="object-contain"
+            priority
+          />
+          <span className="text-lg font-semibold text-gray-900">GGMP - Global Gem Marketplace</span>
+        </Link>
           {/* Desktop links */}
           <div className="hidden md:flex items-center gap-3">
 
