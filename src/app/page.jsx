@@ -1,5 +1,6 @@
 export const dynamic = 'force-dynamic'
 import Link from 'next/link'
+import Image from 'next/image'
 import { prisma } from '@/lib/prisma'
 import ListingCard from '@/components/ListingCard'
 import { Search, Shield, MessageCircle, Gem, ArrowRight, Star } from 'lucide-react'
@@ -17,6 +18,19 @@ const GEM_COLORS = {
   Garnet: 'bg-rose-50 text-rose-700 hover:bg-rose-100',
   Tourmaline: 'bg-lime-50 text-lime-700 hover:bg-lime-100',
   Other: 'bg-gray-50 text-gray-700 hover:bg-gray-100',
+}
+
+const CATEGORY_IMAGES = {
+  Ruby:        'https://images.unsplash.com/photo-1586348943529-beaae6c28db9?w=400&q=80',
+  Sapphire:    'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&q=80',
+  Emerald:     'https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=400&q=80',
+  Spinel:      'https://images.unsplash.com/photo-1573408301185-9519f94816b5?w=400&q=80',
+  Topaz:       'https://images.unsplash.com/photo-1601121141461-9d6647bef0a1?w=400&q=80',
+  Moonstone:   'https://images.unsplash.com/photo-1567593810070-7a3d471af022?w=400&q=80',
+  Amethyst:    'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400&q=80',
+  Alexandrite: 'https://images.unsplash.com/photo-1583937443787-b9f5a0c0b1a0?w=400&q=80',
+  Garnet:      'https://images.unsplash.com/photo-1598560917807-1bae44bd2be8?w=400&q=80',
+  Tourmaline:  'https://images.unsplash.com/photo-1617038220319-276d3cfab638?w=400&q=80',
 }
 
 async function getFeaturedListings() {
@@ -44,8 +58,32 @@ async function getStats() {
   } catch { return { listingCount: 0, userCount: 0 } }
 }
 
+async function getCategoryCounts() {
+  try {
+    const counts = await prisma.listing.groupBy({
+      by: ['gemType'],
+      where: { status: 'APPROVED' },
+      _count: { gemType: true },
+    })
+    return counts.reduce((acc, item) => {
+      acc[item.gemType] = item._count.gemType
+      return acc
+    }, {})
+  } catch { return {} }
+}
+
 export default async function HomePage() {
-  const [listings, stats] = await Promise.all([getFeaturedListings(), getStats()])
+  const [listings, stats, categoryCounts] = await Promise.all([
+    getFeaturedListings(),
+    getStats(),
+    getCategoryCounts()
+  ])
+
+  const CATEGORIES = Object.keys(CATEGORY_IMAGES).map((name) => ({
+    name,
+    image: CATEGORY_IMAGES[name],
+    count: categoryCounts[name] || 0,
+  }))
 
   return (
     <div>
@@ -98,7 +136,7 @@ export default async function HomePage() {
       </section>
 
       {/* Gem type pills */}
-      <section className="bg-gray-50 border-b border-gray-200 py-5">
+      {/* <section className="bg-gray-50 border-b border-gray-200 py-5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-wrap gap-2">
             <Link href="/listings" className="px-4 py-2 bg-gem-600 text-white text-sm font-medium rounded-full hover:bg-gem-700 transition-colors">
@@ -111,6 +149,45 @@ export default async function HomePage() {
               </Link>
             ))}
           </div>
+        </div>
+      </section> */}
+
+      {/* Categories grid */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-semibold text-gray-900">Shop by gemstone</h2>
+          <Link href="/listings" className="flex items-center gap-1 text-sm text-gem-600 hover:text-gem-800 font-medium">
+            View all <ArrowRight size={15} />
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          {CATEGORIES.map((cat) => (
+            <Link
+              key={cat.name}
+              href={`/listings?gemType=${cat.name}`}
+              className="group relative overflow-hidden rounded-2xl aspect-square shadow-sm hover:shadow-md transition-all duration-200"
+            >
+              {/* Image */}
+              <Image
+                src={cat.image}
+                alt={cat.name}
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+
+              {/* Dark overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+
+              {/* Label */}
+              <div className="absolute bottom-0 left-0 right-0 p-3">
+                <p className="text-white font-semibold text-sm">{cat.name}</p>
+                {cat.count > 0 && (
+                  <p className="text-white/70 text-xs mt-0.5">{cat.count} listings</p>
+                )}
+              </div>
+            </Link>
+          ))}
         </div>
       </section>
 
