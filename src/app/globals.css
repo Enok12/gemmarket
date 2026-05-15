@@ -52,3 +52,15 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* Bottom nav spacing on mobile */
+@media (max-width: 1024px) {
+  main {
+    padding-bottom: 5rem;
+  }
+}
+
+/* iPhone home indicator safe area */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
