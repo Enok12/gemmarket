@@ -125,32 +125,40 @@
   <p class="status" id="status">Waiting for connection…</p>
 
   <script>
-    const APP_URL = 'https://your-vercel-url.vercel.app'
+   const APP_URL = 'https://gemmarket.vercel.app'
 
-    // Auto retry every 5 seconds
-    let retryInterval = setInterval(checkConnection, 5000)
+let retryInterval = setInterval(checkConnection, 5000)
 
-    function tryAgain() {
-      document.getElementById('checking').style.display = 'flex'
-      document.getElementById('status').style.display = 'none'
-      checkConnection()
+function tryAgain() {
+  document.getElementById('checking').style.display = 'flex'
+  document.getElementById('status').style.display = 'none'
+  checkConnection()
+}
+
+function checkConnection() {
+  if (navigator.onLine) {
+    clearInterval(retryInterval)
+    // Tell Android to load the URL natively
+    if (window.Android) {
+      window.Android.loadApp()
+    } else {
+      window.location.replace(APP_URL)
     }
+  } else {
+    document.getElementById('checking').style.display = 'none'
+    document.getElementById('status').style.display = 'block'
+    document.getElementById('status').textContent = 'Still no connection. Retrying…'
+  }
+}
 
-    function checkConnection() {
-      if (navigator.onLine) {
-        clearInterval(retryInterval)
-        window.location.href = APP_URL
-      } else {
-        document.getElementById('checking').style.display = 'none'
-        document.getElementById('status').style.display = 'block'
-        document.getElementById('status').textContent = 'Still no connection. Retrying…'
-      }
-    }
-
-    window.addEventListener('online', () => {
-      clearInterval(retryInterval)
-      window.location.href = APP_URL
-    })
+window.addEventListener('online', () => {
+  clearInterval(retryInterval)
+  if (window.Android) {
+    window.Android.loadApp()
+  } else {
+    window.location.replace(APP_URL)
+  }
+})
   </script>
 </body>
 </html>

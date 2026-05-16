@@ -3,8 +3,8 @@ package com.ggmp.marketplace;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.content.Context;
 import com.getcapacitor.BridgeActivity;
 
@@ -16,6 +16,9 @@ public class MainActivity extends BridgeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Expose Android interface to JavaScript
+        getBridge().getWebView().addJavascriptInterface(new AndroidBridge(), "Android");
     }
 
     @Override
@@ -37,5 +40,15 @@ public class MainActivity extends BridgeActivity {
             getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+    }
+
+    // JavaScript interface
+    public class AndroidBridge {
+        @JavascriptInterface
+        public void loadApp() {
+            runOnUiThread(() -> {
+                getBridge().getWebView().loadUrl(APP_URL);
+            });
+        }
     }
 }
