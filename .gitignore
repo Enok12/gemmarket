@@ -3,4 +3,4 @@ node_modules/
 .env
 .env.local
 ggmp-release.keystore
-ggmp-release-base64.txt
+ggmp-release-base64.txtcertutil -encodehex -f ggmp-release.keystore ggmp-release-base64.txt 0x40000001
