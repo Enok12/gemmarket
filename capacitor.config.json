@@ -3,7 +3,6 @@
   "appName": "GGMP",
   "webDir": "public",
   "server": {
-    "url": "https://gemmarket.vercel.app",
     "cleartext": true,
     "androidScheme": "https"
   },
