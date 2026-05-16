@@ -14,21 +14,25 @@
     "db:seed": "node prisma/seed.js"
   },
   "dependencies": {
+    "@capacitor/android": "^8.3.4",
+    "@capacitor/cli": "^8.3.4",
+    "@capacitor/core": "^8.3.4",
+    "@capacitor/ios": "^8.3.4",
     "@hookform/resolvers": "^3.3.4",
     "@prisma/client": "^5.10.0",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.0.1",
+    "clsx": "^2.1.0",
     "jsonwebtoken": "^9.0.2",
+    "lucide-react": "^0.335.0",
     "next": "14.1.0",
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.50.1",
-    "zod": "^3.22.4",
-    "clsx": "^2.1.0",
-    "tailwind-merge": "^2.2.1",
     "react-hot-toast": "^2.4.1",
-    "lucide-react": "^0.335.0",
-    "sharp": "^0.33.2"
+    "sharp": "^0.33.2",
+    "tailwind-merge": "^2.2.1",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "autoprefixer": "^10.0.1",

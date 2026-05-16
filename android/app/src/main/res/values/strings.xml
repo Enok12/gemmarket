@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">GGMP </string>
+    <string name="title_activity_main">GGMP </string>
+    <string name="package_name">com.ggmp.marketplace</string>
+    <string name="custom_url_scheme">com.ggmp.marketplace</string>
+</resources>
