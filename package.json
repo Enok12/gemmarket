@@ -22,6 +22,8 @@
     "@capacitor/splash-screen": "^8.0.1",
     "@hookform/resolvers": "^3.3.4",
     "@prisma/client": "^5.10.0",
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.38.0",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.0.1",
     "clsx": "^2.1.0",
@@ -32,6 +34,7 @@
     "react-dom": "^18",
     "react-hook-form": "^7.50.1",
     "react-hot-toast": "^2.4.1",
+    "resend": "^6.12.3",
     "sharp": "^0.33.2",
     "tailwind-merge": "^2.2.1",
     "zod": "^3.22.4"

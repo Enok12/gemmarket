@@ -19,13 +19,15 @@ enum ListingStatus {
 }
 
 model User {
-  id        String    @id @default(cuid())
-  name      String
-  email     String    @unique
-  password  String
-  role      Role      @default(USER)
-  createdAt DateTime  @default(now())
-  listings  Listing[]
+  id         String    @id @default(cuid())
+  name       String
+  email      String    @unique
+  password   String
+  role       Role      @default(USER)
+  isVerified Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+  listings   Listing[]
+  otps       Otp[]
 }
 
 model Listing {
@@ -65,4 +67,14 @@ model Tracking {
   listingId      String  @unique
   whatsappClicks Int     @default(0)
   listing        Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+}
+
+model Otp {
+  id        String   @id @default(cuid())
+  userId    String
+  code      String
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

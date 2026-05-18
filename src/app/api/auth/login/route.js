@@ -4,6 +4,8 @@ import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { signToken } from '@/lib/auth'
 import { apiSuccess, apiError } from '@/lib/utils'
+import { loginLimiter, checkRateLimit } from '@/lib/ratelimit'
+
 
 const schema = z.object({
   email:    z.string().email(),
@@ -12,6 +14,13 @@ const schema = z.object({
 
 export async function POST(req) {
   try {
+
+    // Rate limit check
+    const { success } = await checkRateLimit(loginLimiter, req)
+    if (!success) {
+      return apiError('Too many login attempts. Please try again in 1 hour.', 429)
+    }
+    
     const body   = await req.json()
     const parsed = schema.safeParse(body)
 
@@ -24,6 +33,11 @@ export async function POST(req) {
 
     const match = await bcrypt.compare(password, user.password)
     if (!match) return apiError('Invalid email or password', 401)
+
+      // Block unverified users
+      if (!user.isVerified) {
+        return apiError('Please verify your email before logging in. Check your inbox for the verification code.', 403)
+      }
 
     const token = signToken({ userId: user.id, email: user.email, role: user.role })
 

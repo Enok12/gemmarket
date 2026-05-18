@@ -3,6 +3,8 @@ import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { getUserFromRequest } from '@/lib/auth'
 import { apiSuccess, apiError } from '@/lib/utils'
+import { createListingLimiter, checkRateLimit } from '@/lib/ratelimit'
+
 
 const createSchema = z.object({
   title:          z.string().min(5),
@@ -85,6 +87,13 @@ export async function GET(req) {
 
 // POST /api/listings
 export async function POST(req) {
+
+  // Rate limit check
+    const { success } = await checkRateLimit(createListingLimiter, req)
+    if (!success) {
+      return apiError('Too many listing submissions. Please try again in 1 hour.', 429)
+    }
+    
   try {
     const currentUser = getUserFromRequest(req)
     if (!currentUser) return apiError('Unauthorized', 401)

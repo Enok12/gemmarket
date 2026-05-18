@@ -2,9 +2,18 @@ export const dynamic = 'force-dynamic'
 import { getUserFromRequest } from '@/lib/auth'
 import { uploadImage } from '@/lib/cloudinary'
 import { apiSuccess, apiError } from '@/lib/utils'
+import { uploadLimiter, checkRateLimit } from '@/lib/ratelimit'
+
 
 export async function POST(req) {
   try {
+
+     // Rate limit check
+    const { success } = await checkRateLimit(uploadLimiter, req)
+    if (!success) {
+      return apiError('Too many upload attempts. Please try again in 1 hour.', 429)
+    }
+    
     const currentUser = getUserFromRequest(req)
     if (!currentUser) return apiError('Unauthorized', 401)
 

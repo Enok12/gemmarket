@@ -39,10 +39,9 @@ export default function RegisterPage() {
         body:    JSON.stringify({ name: data.name, email: data.email, password: data.password }),
       })
       const result = await res.json()
-      if (result.success) {
-        login(result.data.user, result.data.token)
-        toast.success('Account created! Welcome to GGMP.')
-        router.push('/')
+        if (result.success) {
+        toast.success('Account created! Please check your email for the verification code.')
+        router.push(`/verify?userId=${result.data.userId}`)
       } else {
         toast.error(result.error || 'Registration failed')
       }
