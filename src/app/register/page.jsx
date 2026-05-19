@@ -15,6 +15,10 @@ const schema = z.object({
   email:           z.string().email('Invalid email'),
   password:        z.string().min(8, 'Password must be at least 8 characters'),
   confirmPassword: z.string(),
+  phone:           z.string()
+                     .regex(/^\+[1-9]\d{6,14}$/, 'Phone must include country code e.g. +94771234567')
+                     .optional()
+                     .or(z.literal('')),
 }).refine((d) => d.password === d.confirmPassword, {
   message: 'Passwords do not match',
   path: ['confirmPassword'],
@@ -36,7 +40,12 @@ export default function RegisterPage() {
       const res    = await fetch('/api/auth/register', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ name: data.name, email: data.email, password: data.password }),
+        body: JSON.stringify({ 
+          name:     data.name, 
+          email:    data.email, 
+          password: data.password,
+          phone:    data.phone || undefined,
+        }),
       })
       const result = await res.json()
         if (result.success) {
@@ -75,6 +84,20 @@ export default function RegisterPage() {
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
               <input {...register('email')} type="email" placeholder="you@example.com" className="input-field" />
               {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email.message}</p>}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                Phone number <span className="text-gray-400 font-normal">(optional)</span>
+              </label>
+              <input
+                {...register('phone')}
+                type="tel"
+                placeholder="+94771234567"
+                className="input-field"
+              />
+              <p className="text-xs text-gray-400 mt-1">Include country code e.g. +94 for Sri Lanka</p>
+              {errors.phone && <p className="text-xs text-red-500 mt-1">{errors.phone.message}</p>}
             </div>
 
             <div>

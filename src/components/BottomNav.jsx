@@ -32,21 +32,21 @@ export default function BottomNav() {
     { label: 'Account', icon: <User size={20} />,         href: '/login'    },
   ]
 
-  const sellerItems = [
-    { label: 'Home',      icon: <Home size={20} />,            href: '/'          },
-    { label: 'Listings',  icon: <Search size={20} />,          href: '/listings'  },
-    { label: 'Sell',      icon: <Tag size={22} />,              href: '/create',   center: true },
-    { label: 'Dashboard', icon: <LayoutDashboard size={20} />, href: '/dashboard' },
-    { label: 'Logout',    icon: <LogOut size={20} />,          action: confirmLogout },
-  ]
+const sellerItems = [
+  { label: 'Home',      icon: <Home size={20} />,            href: '/'          },
+  { label: 'Listings',  icon: <Search size={20} />,          href: '/listings'  },
+  { label: 'Sell',      icon: <Tag size={22} />,              href: '/create',   center: true },
+  { label: 'Dashboard', icon: <LayoutDashboard size={20} />, href: '/dashboard' },
+  { label: 'Account',   icon: <User size={20} />,            href: '/account'   },
+]
 
-  const adminItems = [
-    { label: 'Home',     icon: <Home size={20} />,         href: '/'       },
-    { label: 'Listings', icon: <Search size={20} />,       href: '/listings' },
-    { label: 'Sell',     icon: <Tag size={22} />,           href: '/create', center: true },
-    { label: 'Admin',    icon: <ShieldCheck size={20} />,  href: '/admin'  },
-    { label: 'Logout',   icon: <LogOut size={20} />,       action: confirmLogout },
-  ]
+ const adminItems = [
+  { label: 'Home',     icon: <Home size={20} />,         href: '/'         },
+  { label: 'Listings', icon: <Search size={20} />,       href: '/listings' },
+  { label: 'Sell',     icon: <Tag size={22} />,           href: '/create',  center: true },
+  { label: 'Admin',    icon: <ShieldCheck size={20} />,  href: '/admin'    },
+  { label: 'Account',   icon: <User size={20} />,            href: '/account'   },
+]
 
   const items = !user ? guestItems : isAdmin ? adminItems : sellerItems
 

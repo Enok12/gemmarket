@@ -13,6 +13,10 @@ const schema = z.object({
   name:     z.string().min(2, 'Name must be at least 2 characters'),
   email:    z.string().email('Invalid email'),
   password: z.string().min(8, 'Password must be at least 8 characters'),
+  phone:    z.string()
+              .regex(/^\+[1-9]\d{6,14}$/, 'Phone must include country code e.g. +94771234567')
+              .optional()
+              .or(z.literal('')),
 })
 
 export async function POST(req) {
@@ -23,12 +27,12 @@ export async function POST(req) {
     if (!success) {
       return apiError('Too many registration attempts. Please try again in 1 hour.', 429)
     }
-    
+
     const body   = await req.json()
     const parsed = schema.safeParse(body)
     if (!parsed.success) return apiError(parsed.error.errors[0].message, 422)
 
-    const { name, email, password } = parsed.data
+    const { name, email, password, phone } = parsed.data
 
     const existing = await prisma.user.findUnique({ where: { email } })
     if (existing) return apiError('Email already registered', 409)
@@ -36,9 +40,15 @@ export async function POST(req) {
     const hashed = await bcrypt.hash(password, 12)
 
     // Create user as unverified
-    const user = await prisma.user.create({
-      data: { name, email, password: hashed, isVerified: false },
-    })
+   const user = await prisma.user.create({
+    data: { 
+      name, 
+      email, 
+      password: hashed, 
+      phone:      phone || null, 
+      isVerified: false 
+    },
+  })
 
     // Generate OTP and save to DB (expires in 10 minutes)
     const code = generateOtp()

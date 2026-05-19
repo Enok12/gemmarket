@@ -4,6 +4,7 @@ import { AuthProvider } from '@/hooks/useAuth'
 import Navbar from '@/components/Navbar'
 import { Toaster } from 'react-hot-toast'
 import BottomNav from '@/components/BottomNav'
+import PageTransition from '@/components/PageTransition'
 
 
 const inter = Inter({ subsets: ['latin'] })
@@ -27,7 +28,11 @@ export default function RootLayout({ children }) {
       <body className={`${inter.className} bg-gray-50 text-gray-900 antialiased`}>
         <AuthProvider>
           <Navbar />
-          <main className="min-h-screen">{children}</main>
+            <main className="min-h-screen">
+            <PageTransition>
+              {children}
+            </PageTransition>
+          </main>
           <BottomNav />
           <footer className="bg-white border-t border-gray-200 py-8 mt-12">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">

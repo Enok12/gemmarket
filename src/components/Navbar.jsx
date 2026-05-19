@@ -5,8 +5,8 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
-import { Gem, Menu, X, LogOut, LayoutDashboard, ShieldCheck, PlusCircle, ShoppingBag, Tag } from 'lucide-react'
 import { useLogout } from '@/hooks/useLogout'
+import { User, LogOut, LayoutDashboard, ShieldCheck, PlusCircle, ShoppingBag, Tag } from 'lucide-react'
 
 
 export default function Navbar() {
@@ -91,6 +91,10 @@ export default function Navbar() {
 
                   {userMenuOpen && (
                     <div className="absolute right-0 mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                      <Link href="/account" onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                        <User size={14} /> My Account
+                      </Link>
                       <Link href="/dashboard" onClick={() => setUserMenuOpen(false)}
                         className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
                         <LayoutDashboard size={14} /> My Listings
