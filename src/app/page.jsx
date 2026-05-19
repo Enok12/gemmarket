@@ -136,13 +136,26 @@ export default async function HomePage() {
           <div className="flex items-center justify-between gap-8">
           {/* Left — text */}
           <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 bg-gem-50 text-gem-700 text-sm font-medium px-3 py-1.5 rounded-full mb-6">
+            <div className="inline-flex items-center gap-2 bg-gem-50 text-gem-700 text-sm font-medium px-3 py-0 rounded-full mb-2">
               <Star size={13} /> World’s 1# Online Gemstone Marketplace
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight mb-5">
+            {/* <h1 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight mb-5">
               Find rare gemstones,<br />
               <span className="text-gem-600">Direct from the source</span>
-            </h1>
+            </h1> */}
+
+              {/* CTA banner */}
+              <section className="max-w-7xl mx-auto px-2 sm:px-1 lg:px-0 py-4">
+                <div className="bg-gem-600 rounded-2xl p-8 md:p-12 text-center">
+                  <h2 className="text-2xl font-bold text-white mb-3">Ready to sell your gemstones?</h2>
+                  <p className="text-gem-200 mb-6">Join hundreds of sellers reaching verified buyers every day.</p>
+                  <Link href="/register"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-white text-gem-700 font-semibold text-lg rounded-xl hover:bg-gem-50 transition-colors">
+                    Post your first listing — it's free <ArrowRight size={16} />
+                  </Link>
+                </div>
+              </section>
+              
             <p className="text-md text-gray-600 mb-2 max-w-2xl">
               We connect you, to the global market place and make your future success. GGMP Global Gem Market Place            </p>
             <p className="text-base font-semibold text-gem-700 mb-8">
@@ -287,18 +300,6 @@ export default async function HomePage() {
               </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* CTA banner */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="bg-gem-600 rounded-2xl p-8 md:p-12 text-center">
-          <h2 className="text-2xl font-bold text-white mb-3">Ready to sell your gemstones?</h2>
-          <p className="text-gem-200 mb-6">Join hundreds of sellers reaching verified buyers every day.</p>
-          <Link href="/register"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-white text-gem-700 font-semibold text-sm rounded-xl hover:bg-gem-50 transition-colors">
-            Post your first listing — it's free <ArrowRight size={16} />
-          </Link>
         </div>
       </section>
     </div>
