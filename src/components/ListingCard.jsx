@@ -16,7 +16,7 @@ const GEM_EMOJI = {
 }
 
 export default function ListingCard({ listing, showStatus = false }) {
-  const { user } = useAuth()   // ← add this line
+  const { user } = useAuth()   
   const emoji        = GEM_EMOJI[listing.gemType] || '💎'
   const gemColorClass = getGemColor(listing.gemType)
   const mainImage    = listing.images?.[0]?.imageUrl
@@ -25,25 +25,35 @@ export default function ListingCard({ listing, showStatus = false }) {
     <div className="group bg-white rounded-xl border border-gray-200 overflow-hidden hover:border-gem-300 hover:shadow-md transition-all duration-200">
       {/* Image */}
       <Link href={`/listings/${listing.id}`} className="block relative h-48 bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
-        {mainImage ? (
-          <Image
-            src={mainImage}
-            alt={listing.title}
-            fill
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-5xl">{emoji}</div>
-        )}
-        {showStatus && (
-          <span className={`absolute top-2 left-2 text-xs font-medium px-2 py-1 rounded-full ${
-            listing.status === 'APPROVED' ? 'bg-green-100 text-green-700' :
-            listing.status === 'PENDING'  ? 'bg-amber-100 text-amber-700' :
-                                            'bg-red-100 text-red-700'
-          }`}>
-            {listing.status}
+      {mainImage ? (
+        <Image
+          src={mainImage}
+          alt={listing.title}
+          fill
+          className="object-cover group-hover:scale-105 transition-transform duration-300"
+        />
+      ) : (
+        <div className="w-full h-full flex items-center justify-center text-5xl">{emoji}</div>
+      )}
+
+      {/* Sold badge */}
+      {listing.availability === 'Sold' && (
+        <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+          <span className="bg-red-500 text-white text-sm font-bold px-4 py-1.5 rounded-full">
+            SOLD
           </span>
-        )}
+        </div>
+      )}
+
+      {showStatus && (
+        <span className={`absolute top-2 left-2 text-xs font-medium px-2 py-1 rounded-full ${
+          listing.status === 'APPROVED' ? 'bg-green-100 text-green-700' :
+          listing.status === 'PENDING'  ? 'bg-amber-100 text-amber-700' :
+                                          'bg-red-100 text-red-700'
+        }`}>
+          {listing.status}
+        </span>
+      )}
       </Link>
 
       {/* Body */}

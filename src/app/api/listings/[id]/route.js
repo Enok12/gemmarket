@@ -18,7 +18,8 @@ const updateSchema = z.object({
   location:       z.string().optional(),
   isCertified:    z.boolean().optional(),
   certificationImage: z.string().optional(),
-  images: z.array(                              // ← add this
+    availability:   z.enum(['Available', 'Sold']).optional(),
+  images: z.array(                            
     z.object({ imageUrl: z.string(), publicId: z.string().optional() })
   ).optional(),
 })

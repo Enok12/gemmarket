@@ -7,7 +7,7 @@ import { getGemColor } from '@/lib/utils'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import {
   MapPin, Scale, Shield, ShieldOff,
-  ArrowLeft, Award, Layers, Scissors, Globe, Calendar
+  ArrowLeft, Award, Layers, Scissors, Globe, Calendar, CheckCircle, XCircle
 } from 'lucide-react'
 import PriceDisplay from '@/components/PriceDisplay'
 
@@ -48,6 +48,13 @@ export default async function ListingDetailPage({ params }) {
       icon: <Calendar size={15} />,
       label: 'Listed',
       value: new Date(listing.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+    },
+    {
+      icon: listing.availability === 'Available'
+        ? <CheckCircle size={15} className="text-green-600" />
+        : <XCircle size={15} className="text-red-500" />,
+      label: 'Availability',
+      value: listing.availability === 'Available' ? 'Available' : 'Sold',
     },
   ]
 
@@ -130,9 +137,18 @@ export default async function ListingDetailPage({ params }) {
               {specs.map(({ icon, label, value }) => (
                 <div key={label} className="flex items-center justify-between text-sm">
                   <span className="flex items-center gap-2 text-gray-500">{icon} {label}</span>
-                  <span className="font-medium text-gray-900">{value}</span>
+                  <span className={`font-medium ${
+                    label === 'Availability'
+                    ? value === 'Available'
+                        ? 'text-green-600'
+                        : 'text-red-500'
+                      : 'text-gray-900'
+                  }`}>
+                    {value}
+                  </span>
                 </div>
               ))}
+
             </div>
           </div>
 

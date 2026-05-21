@@ -21,16 +21,17 @@ const GEM_COLORS = {
 }
 
 const CATEGORY_IMAGES = {
-  Ruby:        'https://images.unsplash.com/photo-1586348943529-beaae6c28db9?w=400&q=80',
-  Sapphire:    'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&q=80',
-  Emerald:     'https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=400&q=80',
-  Spinel:      'https://images.unsplash.com/photo-1573408301185-9519f94816b5?w=400&q=80',
-  Topaz:       'https://images.unsplash.com/photo-1601121141461-9d6647bef0a1?w=400&q=80',
-  Moonstone:   'https://images.unsplash.com/photo-1567593810070-7a3d471af022?w=400&q=80',
-  Amethyst:    'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400&q=80',
-  Alexandrite: 'https://images.unsplash.com/photo-1583937443787-b9f5a0c0b1a0?w=400&q=80',
-  Garnet:      'https://images.unsplash.com/photo-1598560917807-1bae44bd2be8?w=400&q=80',
-  Tourmaline:  'https://images.unsplash.com/photo-1617038220319-276d3cfab638?w=400&q=80',
+  Ruby:        'https://res.cloudinary.com/dapowzg6d/image/upload/v1779353585/Ruby_x6yv0k.webp',
+  Sapphire:    'https://res.cloudinary.com/dapowzg6d/image/upload/v1779353586/Sapphire_ntlrtr.avif',
+  Emerald:     'https://res.cloudinary.com/dapowzg6d/image/upload/v1779353585/Emerald_frqzlk.avif',
+  Zircon:      'https://res.cloudinary.com/dapowzg6d/image/upload/v1779353586/Zircon_vqvzrz.avif',
+  Spinel:      'https://res.cloudinary.com/dapowzg6d/image/upload/v1779353585/natural-red-spinel-white-background-included-clipping-path-natural-red-spinel-white-background-included-clipping-path-168379268_zoe3yu.webp',
+  Topaz:       'https://res.cloudinary.com/dapowzg6d/image/upload/v1779353587/Topaz_s06o1b.jpg',
+  Moonstone:   'https://res.cloudinary.com/dapowzg6d/image/upload/v1779353586/Moonstone_jo1crw.jpg',
+  Amethyst:    'https://res.cloudinary.com/dapowzg6d/image/upload/v1779353585/Amethyst_po7l5m.jpg',
+  Alexandrite: 'https://res.cloudinary.com/dapowzg6d/image/upload/v1779353585/Alaxandrite_gltgmh.jpg',
+  Garnet:      'https://res.cloudinary.com/dapowzg6d/image/upload/v1779353586/Garnet_xyqz0i.jpg',
+  Tourmaline:  'https://res.cloudinary.com/dapowzg6d/image/upload/v1779353587/Tourmaline_bcyyiy.webp',
 }
 
 async function getFeaturedListings() {

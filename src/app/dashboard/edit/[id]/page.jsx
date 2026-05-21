@@ -25,6 +25,8 @@ const schema = z.object({
   whatsappNumber: z.string().min(7),
   location:       z.string().min(1),
   isCertified:    z.boolean().default(false),
+  availability:   z.enum(['Available', 'Sold']).default('Available'),
+
 })
 
 export default function EditListingPage() {
@@ -83,6 +85,8 @@ export default function EditListingPage() {
         whatsappNumber: l.whatsappNumber,
         location:       l.location,
         isCertified:    l.isCertified,
+        availability:   l.availability || 'Available',
+
       })
 
       setImages(l.images.map((i) => ({ url: i.imageUrl, publicId: i.publicId || '' })))
@@ -234,6 +238,15 @@ export default function EditListingPage() {
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Origin</label>
               <input {...register('origin')} className="input-field" />
             </div>
+          </div>
+
+          {/* Availability */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Availability</label>
+            <select {...register('availability')} className="input-field">
+              <option value="Available">Available</option>
+              <option value="Sold">Sold</option>
+            </select>
           </div>
 
           <div className="flex items-start gap-3 pt-3 border-t border-gray-100">

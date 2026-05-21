@@ -45,6 +45,7 @@ model Listing {
   whatsappNumber     String
   location           String
   isCertified        Boolean       @default(false)
+  availability       String        @default("Available")
   certificationImage String?
   status             ListingStatus @default(PENDING)
   createdAt          DateTime      @default(now())

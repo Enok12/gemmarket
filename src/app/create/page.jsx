@@ -23,6 +23,7 @@ const schema = z.object({
   description:    z.string().min(20, 'Description must be at least 20 characters'),
   whatsappNumber: z.string().min(7, 'Enter your WhatsApp number'),
   location:       z.string().min(1, 'Select a location'),
+  availability:   z.enum(['Available', 'Sold']).default('Available'),
   isCertified:    z.boolean().default(false),
 })
 
@@ -232,6 +233,18 @@ export default function CreateListingPage() {
               {errors.origin && <p className="text-xs text-red-500 mt-1">{errors.origin.message}</p>}
             </div>
           </div>
+
+          {/* Availability */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                Availability <span className="text-red-500">*</span>
+              </label>
+              <select {...register('availability')} className="input-field">
+                <option value="Available">Available</option>
+                <option value="Sold">Sold</option>
+              </select>
+              {errors.availability && <p className="text-xs text-red-500 mt-1">{errors.availability.message}</p>}
+            </div>
 
           {/* Certified toggle */}
           <div className="flex items-start gap-3 pt-3 border-t border-gray-100">

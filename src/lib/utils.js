@@ -50,9 +50,10 @@ export function getGemColor(gemType) {
 }
 
 export const GEM_TYPES = [
-  'Ruby', 'Sapphire', 'Emerald', 'Spinel', 'Topaz',
+  'Ruby', 'Sapphire', 'Emerald', 'Zircon', 'Spinel', 'Topaz',
   'Moonstone', 'Amethyst', 'Alexandrite', 'Garnet', 'Tourmaline', 'Other',
 ]
+
 
 export const LOCATIONS = [
   'Colombo', 'Ratnapura', 'Galle', 'Kandy', 'Matara',

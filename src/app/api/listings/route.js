@@ -20,6 +20,7 @@ const createSchema = z.object({
   location:       z.string().min(1),
   isCertified:    z.boolean().default(false),
   certificationImage: z.string().optional(),
+  availability:   z.enum(['Available', 'Sold']).default('Available'), 
   images: z.array(
     z.object({ imageUrl: z.string(), publicId: z.string().optional() })
   ).optional(),
