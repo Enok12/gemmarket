@@ -22,6 +22,9 @@ const updateSchema = z.object({
   images: z.array(                            
     z.object({ imageUrl: z.string(), publicId: z.string().optional() })
   ).optional(),
+    videos: z.array(
+    z.object({ videoUrl: z.string(), publicId: z.string().optional() })
+  ).optional(),
 })
 
 export async function GET(req, { params }) {
@@ -30,6 +33,7 @@ export async function GET(req, { params }) {
       where: { id: params.id },
       include: {
         images:   true,
+        videos:   true,
         user:     { select: { id: true, name: true } },
         tracking: true,
       },
@@ -61,26 +65,35 @@ export async function PATCH(req, { params }) {
     // Reset to PENDING if owner changes content (needs re-approval)
     const contentChanged = parsed.data.title || parsed.data.description || parsed.data.price
 
-    const { images, ...listingFields } = parsed.data
+    const { images, videos, ...listingFields } = parsed.data
 
-const updated = await prisma.listing.update({
-  where: { id: params.id },
-    data: {
-      ...listingFields,
-      ...(contentChanged && isOwner && !isAdmin ? { status: 'PENDING' } : {}),
-      updatedAt: new Date(),
-      ...(images && {
-        images: {
-          deleteMany: {},                          // remove old images
-          create: images.map((img) => ({
-            imageUrl: img.imageUrl,
-            publicId: img.publicId,
-          })),
-        },
-      }),
-    },
-    include: { images: true, user: { select: { id: true, name: true } } },
-  })
+    const updated = await prisma.listing.update({
+      where: { id: params.id },
+      data: {
+        ...listingFields,
+        ...(contentChanged && isOwner && !isAdmin ? { status: 'PENDING' } : {}),
+        updatedAt: new Date(),
+        ...(images && {
+          images: {
+            deleteMany: {},
+            create: images.map((img) => ({
+              imageUrl: img.imageUrl,
+              publicId: img.publicId,
+            })),
+          },
+        }),
+        ...(videos && {
+          videos: {
+            deleteMany: {},
+            create: videos.map((vid) => ({
+              videoUrl: vid.videoUrl,
+              publicId: vid.publicId,
+            })),
+          },
+        }),
+      },
+      include: { images: true, videos: true, user: { select: { id: true, name: true } } },
+    })
 
     return apiSuccess(updated)
   } catch (err) {

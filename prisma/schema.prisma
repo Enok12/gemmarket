@@ -53,6 +53,7 @@ model Listing {
   userId             String
   user               User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   images             Image[]
+  videos             Video[]       
   tracking           Tracking?
 }
 
@@ -60,6 +61,14 @@ model Image {
   id        String  @id @default(cuid())
   listingId String
   imageUrl  String
+  publicId  String?
+  listing   Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+}
+
+model Video {
+  id        String  @id @default(cuid())
+  listingId String
+  videoUrl  String
   publicId  String?
   listing   Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
 }

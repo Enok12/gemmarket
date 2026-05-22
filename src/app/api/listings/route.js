@@ -20,9 +20,12 @@ const createSchema = z.object({
   location:       z.string().min(1),
   isCertified:    z.boolean().default(false),
   certificationImage: z.string().optional(),
-  availability:   z.enum(['Available', 'Sold']).default('Available'), 
+  availability:   z.enum(['Available', 'Sold']).default('Available'),
   images: z.array(
     z.object({ imageUrl: z.string(), publicId: z.string().optional() })
+  ).optional(),
+  videos: z.array(                                                        // ← add this
+    z.object({ videoUrl: z.string(), publicId: z.string().optional() })
   ).optional(),
 })
 
@@ -69,6 +72,7 @@ export async function GET(req) {
         orderBy: { createdAt: 'desc' },
         include: {
           images:   { take: 1 },
+          videos:   true,
           user:     { select: { id: true, name: true } },
           tracking: { select: { whatsappClicks: true } },
         },
@@ -103,7 +107,7 @@ export async function POST(req) {
     const parsed = createSchema.safeParse(body)
     if (!parsed.success) return apiError(parsed.error.errors[0].message, 422)
 
-    const { images, ...listingData } = parsed.data
+    const { images, videos, ...listingData } = parsed.data
 
     const listing = await prisma.listing.create({
       data: {
@@ -112,10 +116,14 @@ export async function POST(req) {
         ...(images?.length && {
           images: { create: images.map((img) => ({ imageUrl: img.imageUrl, publicId: img.publicId })) },
         }),
+        ...(videos?.length && {
+          videos: { create: videos.map((vid) => ({ videoUrl: vid.videoUrl, publicId: vid.publicId })) },
+        }),
         tracking: { create: {} },
       },
       include: {
         images:   true,
+        videos:   true,
         tracking: true,
         user:     { select: { id: true, name: true, email: true } },
       },

@@ -17,6 +17,7 @@ async function getListing(id) {
     where: { id, status: 'APPROVED' },
     include: {
       images:   true,
+      videos:   true,
       user:     { select: { id: true, name: true } },
       tracking: true,
     },
@@ -97,6 +98,27 @@ export default async function ListingDetailPage({ params }) {
               ))}
             </div>
           )}
+
+          {/* Video player */}
+          {listing.videos?.length > 0 && (
+            <div className="mt-4">
+              <h3 className="text-sm font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polygon points="5 3 19 12 5 21 5 3" />
+                </svg>
+                Gem video
+              </h3>
+              <div className="rounded-xl overflow-hidden bg-black">
+                <video
+                  src={listing.videos[0].videoUrl}
+                  controls
+                  className="w-full max-h-72 object-contain"
+                  poster={listing.images[0]?.imageUrl}
+                />
+              </div>
+            </div>
+          )}
+
         </div>
 
         {/* ── Right: details ── */}

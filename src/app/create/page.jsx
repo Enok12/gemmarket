@@ -10,6 +10,8 @@ import toast from 'react-hot-toast'
 import ImageUpload from '@/components/ImageUpload'
 import { GEM_TYPES, LOCATIONS, CLARITY_OPTIONS } from '@/lib/utils'
 import { Loader2, Info } from 'lucide-react'
+import VideoUpload from '@/components/VideoUpload'
+
 
 const schema = z.object({
   title:          z.string().min(5, 'Title must be at least 5 characters'),
@@ -32,6 +34,7 @@ export default function CreateListingPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [images, setImages]   = useState([])
+  const [video, setVideo]   = useState(null)   
 
   const { register, handleSubmit, control, watch, formState: { errors } } = useForm({
     resolver: zodResolver(schema),
@@ -58,6 +61,8 @@ export default function CreateListingPage() {
         body: JSON.stringify({
           ...data,
           images: images.map((img) => ({ imageUrl: img.url, publicId: img.publicId })),
+          videos: video ? [{ videoUrl: video.url, publicId: video.publicId }] : [], 
+
         }),
       })
       const result = await res.json()
@@ -103,6 +108,15 @@ export default function CreateListingPage() {
           </h2>
           <p className="text-xs text-gray-400 mb-4">First image becomes the main photo. Upload up to 5.</p>
           <ImageUpload images={images} onChange={setImages} maxImages={5} />
+        </section>
+
+        {/* ── Video ── */}
+        <section className="bg-white border border-gray-200 rounded-xl p-6">
+          <h2 className="text-sm font-semibold text-gray-900 mb-1">
+            Video <span className="text-gray-400 font-normal">(optional)</span>
+          </h2>
+          <p className="text-xs text-gray-400 mb-4">Upload a short video showcasing the gem. Max 50 MB.</p>
+          <VideoUpload video={video} onChange={setVideo} />
         </section>
 
         {/* ── Basic info ── */}
