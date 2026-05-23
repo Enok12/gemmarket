@@ -19,12 +19,12 @@ const schema = z.object({
   gemType:        z.string().min(1, 'Select a gem type'),
   carat:          z.number({ invalid_type_error: 'Enter a valid carat weight' }).positive('Must be positive'),
   color:          z.string().min(1, 'Color is required'),
-  clarity:        z.string().min(1, 'Select a clarity grade'),
+  clarity:        z.string().optional(),
   cut:            z.string().optional(),
-  origin:         z.string().min(1, 'Origin is required'),
+  origin:         z.string().optional(),
   description:    z.string().min(20, 'Description must be at least 20 characters'),
   whatsappNumber: z.string().min(7, 'Enter your WhatsApp number'),
-  location:       z.string().min(1, 'Select a location'),
+  location:       z.string().optional(),
   availability:   z.enum(['Available', 'Sold']).default('Available'),
   isCertified:    z.boolean().default(false),
 })
@@ -217,12 +217,12 @@ export default function CreateListingPage() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Clarity <span className="text-red-500">*</span>
+                Clarity <span className="text-gray-400 font-normal">(optional)</span>
               </label>
-              <select {...register('clarity')} className="input-field">
-                <option value="">Select clarity…</option>
-                {CLARITY_OPTIONS.map((c) => <option key={c} value={c}>{c}</option>)}
-              </select>
+             <select {...register('clarity')} className="input-field">
+              <option value="">Select clarity… (optional)</option>
+              {CLARITY_OPTIONS.map((c) => <option key={c} value={c}>{c}</option>)}
+            </select>
               {errors.clarity && <p className="text-xs text-red-500 mt-1">{errors.clarity.message}</p>}
             </div>
 
@@ -237,7 +237,7 @@ export default function CreateListingPage() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Origin <span className="text-red-500">*</span>
+                Origin <span className="text-gray-400 font-normal">(optional)</span>
               </label>
               <input
                 {...register('origin')}
@@ -306,10 +306,10 @@ export default function CreateListingPage() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Your location <span className="text-red-500">*</span>
+                Your location <span className="text-gray-400 font-normal">(optional)</span>
               </label>
               <select {...register('location')} className="input-field">
-                <option value="">Select location…</option>
+                <option value="">Select location… (optional)</option>
                 {LOCATIONS.map((l) => <option key={l} value={l}>{l}</option>)}
               </select>
               {errors.location && <p className="text-xs text-red-500 mt-1">{errors.location.message}</p>}

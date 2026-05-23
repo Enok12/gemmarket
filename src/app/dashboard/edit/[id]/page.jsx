@@ -20,12 +20,12 @@ const schema = z.object({
   gemType:        z.string().min(1, 'Select a gem type'),
   carat:          z.number({ invalid_type_error: 'Enter a valid carat weight' }).positive(),
   color:          z.string().min(1),
-  clarity:        z.string().min(1),
+  clarity:        z.string().optional(),
   cut:            z.string().optional(),
-  origin:         z.string().min(1),
+  origin:         z.string().optional(),
   description:    z.string().min(20, 'Description must be at least 20 characters'),
   whatsappNumber: z.string().min(7),
-  location:       z.string().min(1),
+  location:       z.string().optional(),
   isCertified:    z.boolean().default(false),
   availability:   z.enum(['Available', 'Sold']).default('Available'),
 
@@ -245,6 +245,7 @@ export default function EditListingPage() {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Clarity</label>
               <select {...register('clarity')} className="input-field">
+                <option value="">Select clarity… (optional)</option>
                 {CLARITY_OPTIONS.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
@@ -294,6 +295,7 @@ export default function EditListingPage() {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Location</label>
               <select {...register('location')} className="input-field">
+                <option value="">Select location… (optional)</option>
                 {LOCATIONS.map((l) => <option key={l} value={l}>{l}</option>)}
               </select>
             </div>

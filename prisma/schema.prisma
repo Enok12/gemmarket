@@ -38,12 +38,12 @@ model Listing {
   gemType            String
   carat              Float
   color              String
-  clarity            String
+  clarity            String?
   cut                String?
-  origin             String
+  origin             String?
   description        String        @db.Text
   whatsappNumber     String
-  location           String
+  location           String?
   isCertified        Boolean       @default(false)
   availability       String        @default("Available")
   certificationImage String?

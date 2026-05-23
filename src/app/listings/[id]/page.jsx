@@ -41,10 +41,10 @@ export default async function ListingDetailPage({ params }) {
 
   const specs = [
     { icon: <Scale size={15} />,    label: 'Carat weight', value: `${listing.carat} ct` },
-    { icon: <Layers size={15} />,   label: 'Clarity',      value: listing.clarity },
-    { icon: <Scissors size={15} />, label: 'Cut',          value: listing.cut || 'N/A' },
-    { icon: <Globe size={15} />,    label: 'Origin',       value: listing.origin },
-    { icon: <MapPin size={15} />,   label: 'Location',     value: listing.location },
+    ...(listing.clarity  ? [{ icon: <Layers size={15} />,   label: 'Clarity',  value: listing.clarity }]  : []),
+    ...(listing.cut      ? [{ icon: <Scissors size={15} />, label: 'Cut',      value: listing.cut }]      : []),
+    ...(listing.origin   ? [{ icon: <Globe size={15} />,    label: 'Origin',   value: listing.origin }]   : []),
+    ...(listing.location ? [{ icon: <MapPin size={15} />,   label: 'Location', value: listing.location }] : []),
     {
       icon: <Calendar size={15} />,
       label: 'Listed',
@@ -142,7 +142,8 @@ export default async function ListingDetailPage({ params }) {
             </div>
             <h1 className="text-2xl font-bold text-gray-900 mb-1">{listing.title}</h1>
             <p className="text-sm text-gray-500">
-              {listing.color} · {listing.carat} carats · from {listing.origin}
+              {listing.color} · {listing.carat} carats
+              {listing.origin ? ` · from ${listing.origin}` : ''}
             </p>
           </div>
 
