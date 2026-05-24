@@ -9,7 +9,7 @@ import { formatPrice } from '@/lib/utils'
 import toast from 'react-hot-toast'
 import {
   ShieldCheck, CheckCircle, XCircle, Clock,
-  Eye, Loader2, Package, MessageCircle, Users, BarChart3,
+  Eye, Loader2, Package, MessageCircle, Users, BarChart3,LayoutDashboard
 } from 'lucide-react'
 
 const TABS = [
@@ -112,8 +112,9 @@ const { user, token, isAdmin, isLoading } = useAuth()
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-      {/* Header */}
-      <div className="flex items-center gap-3 mb-8">
+   {/* Header */}
+    <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center gap-3">
         <div className="w-10 h-10 bg-gem-600 rounded-xl flex items-center justify-center">
           <ShieldCheck size={20} className="text-white" />
         </div>
@@ -122,6 +123,15 @@ const { user, token, isAdmin, isLoading } = useAuth()
           <p className="text-sm text-gray-500">Review and manage all marketplace listings</p>
         </div>
       </div>
+
+      {/* My Dashboard link — visible on mobile only */}
+      <Link
+        href="/dashboard"
+        className="lg:hidden flex items-center gap-2 px-3 py-2 bg-gem-50 text-gem-700 text-sm font-medium rounded-lg hover:bg-gem-100 transition-colors"
+      >
+        <LayoutDashboard size={15} /> My Dashboard
+      </Link>
+    </div>
 
       {/* Stats cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
