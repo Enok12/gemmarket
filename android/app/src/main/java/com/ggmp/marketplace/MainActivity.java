@@ -1,7 +1,9 @@
 package com.ggmp.marketplace;
 
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
@@ -13,10 +15,10 @@ import com.getcapacitor.BridgeActivity;
 
 public class MainActivity extends BridgeActivity {
 
-    private static final String APP_URL = "https://gemmarket.vercel.app";
+    private static final String APP_URL   = "https://gemmarket.vercel.app";
     private static final String OFFLINE_URL = "file:///android_asset/public/offline.html";
     private boolean isFirstLoad = true;
-    private String lastUrl = APP_URL;  // ← tracks last visited URL
+    private String lastUrl = APP_URL;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -27,7 +29,6 @@ public class MainActivity extends BridgeActivity {
 
             @Override
             public void onPageFinished(WebView view, String url) {
-                // Save last visited URL (but not the offline page)
                 if (!url.contains("offline.html") && !url.contains("file://")) {
                     lastUrl = url;
                 }
@@ -42,6 +43,22 @@ public class MainActivity extends BridgeActivity {
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                String url = request.getUrl().toString();
+
+                // Open WhatsApp links in external app
+                if (url.startsWith("https://wa.me") || url.startsWith("whatsapp://")) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    try {
+                        startActivity(intent);
+                    } catch (Exception e) {
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                        startActivity(browserIntent);
+                    }
+                    return true;
+                }
+
+                // Keep all other URLs inside WebView
                 return false;
             }
         });
@@ -58,7 +75,6 @@ public class MainActivity extends BridgeActivity {
         String currentUrl = getBridge().getWebView().getUrl();
         if (currentUrl != null && currentUrl.contains("offline.html")) {
             if (isConnected()) {
-                // Resume from last visited URL not homepage
                 getBridge().getWebView().loadUrl(lastUrl);
             }
         }
@@ -83,7 +99,6 @@ public class MainActivity extends BridgeActivity {
         @JavascriptInterface
         public void loadApp() {
             runOnUiThread(() -> {
-                // Go back to last visited URL
                 getBridge().getWebView().loadUrl(lastUrl);
             });
         }
