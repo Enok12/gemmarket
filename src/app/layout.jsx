@@ -39,7 +39,7 @@ export default function RootLayout({ children }) {
               <p className="text-sm text-gray-500">© {new Date().getFullYear()} GGMP · World's Gemstone Marketplace</p>
               <div className="flex gap-6 text-sm text-gray-500">
                 <a href="https://www.cgt.onl/about" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900">About</a>
-                <a href="#" className="hover:text-gray-900">Privacy</a>
+                <a href="/privacy" className="hover:text-gray-900">Privacy</a>
                 <a href="#" className="hover:text-gray-900">Terms</a>
               </div>
             </div>
