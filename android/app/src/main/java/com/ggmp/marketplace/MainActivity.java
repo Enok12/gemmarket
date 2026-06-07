@@ -89,7 +89,7 @@ public class MainActivity extends BridgeActivity {
 
                 // Already at root — require double press to exit
                 if (doubleBackToExitPressedOnce) {
-                    finish()
+                    finish();
                     return;
                 }
 
