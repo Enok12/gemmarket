@@ -5,19 +5,23 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceError;
 import android.content.Context;
+import android.widget.Toast;
+import androidx.activity.OnBackPressedCallback;
 import com.getcapacitor.BridgeActivity;
 
 public class MainActivity extends BridgeActivity {
 
-    private static final String APP_URL   = "https://gemmarket.vercel.app";
+    private static final String APP_URL    = "https://gemmarket.vercel.app";
     private static final String OFFLINE_URL = "file:///android_asset/public/offline.html";
-    private boolean isFirstLoad = true;
+    private boolean isFirstLoad  = true;
+    private boolean doubleBackToExitPressedOnce = false;
     private String lastUrl = APP_URL;
 
     @Override
@@ -58,8 +62,49 @@ public class MainActivity extends BridgeActivity {
                     return true;
                 }
 
-                // Keep all other URLs inside WebView
                 return false;
+            }
+        });
+
+        // Handle back button
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                WebView webView = getBridge().getWebView();
+
+                // If WebView can go back navigate back in history
+                if (webView.canGoBack()) {
+                    webView.goBack();
+                    return;
+                }
+
+                // If on offline page go to app
+                String currentUrl = webView.getUrl();
+                if (currentUrl != null && currentUrl.contains("offline.html")) {
+                    if (isConnected()) {
+                        webView.loadUrl(APP_URL);
+                    }
+                    return;
+                }
+
+                // Already at root — require double press to exit
+                if (doubleBackToExitPressedOnce) {
+                    finish()
+                    return;
+                }
+
+                doubleBackToExitPressedOnce = true;
+                Toast.makeText(
+                    MainActivity.this,
+                    "Press back again to exit",
+                    Toast.LENGTH_SHORT
+                ).show();
+
+                // Reset after 2 seconds
+                new Handler().postDelayed(
+                    () -> doubleBackToExitPressedOnce = false,
+                    2000
+                );
             }
         });
 
