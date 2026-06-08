@@ -28,8 +28,7 @@ export async function POST(req) {
       create: { listingId, whatsappClicks: 1 },
     })
 
-    const whatsappUrl = buildWhatsAppLink(listing.whatsappNumber, listing.title)
-
+const whatsappUrl = buildWhatsAppLink(listing.whatsappNumber, listing.title, listing.id)
     return apiSuccess({ whatsappUrl })
   } catch (err) {
     console.error('Track click error:', err)

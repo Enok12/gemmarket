@@ -23,9 +23,10 @@ export function formatPrice(price) {
   }).format(price)
 }
 
-export function buildWhatsAppLink(number, listingTitle) {
+export function buildWhatsAppLink(number, listingTitle, listingId) {
+  const listingUrl = `${process.env.NEXT_PUBLIC_APP_URL}/listings/${listingId}`
   const message = encodeURIComponent(
-    `Hello, I'm interested in your listing: "${listingTitle}". Is it still available?`
+    `Hello, I'm interested in your listing: "${listingTitle}". Is it still available?\n\nView listing: ${listingUrl}`
   )
   const cleaned = number.replace(/\D/g, '')
   return `https://wa.me/${cleaned}?text=${message}`
