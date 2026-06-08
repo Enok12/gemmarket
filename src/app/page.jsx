@@ -149,7 +149,7 @@ export default async function HomePage() {
               {/* CTA banner */}
               <section className="max-w-7xl mx-auto px-2 sm:px-1 lg:px-0 py-4">
                 <div className="bg-gem-600 rounded-2xl p-5 md:p-12 text-center">
-                  <h2 className="text-2xl font-bold text-white mb-2">Ready to sell your gemstones?</h2>
+                  <h2 className="text-2xl font-bold text-white mb-2">Ready to buy or sell your gemstones?</h2>
                   <p className="text-gem-200 mb-2">Join hundreds of sellers reaching verified buyers every day.</p>
                   <Link href="/register"
                     className="inline-flex items-center gap-2 px-6 py-3 bg-white text-gem-700 font-semibold text-lg rounded-xl hover:bg-gem-50 transition-colors">
