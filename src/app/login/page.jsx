@@ -67,8 +67,26 @@ export default function LoginPage() {
               {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email.message}</p>}
             </div>
 
-            <div>
+            {/* <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
+              <div className="relative">
+                <input {...register('password')} type={showPwd ? 'text' : 'password'}
+                  placeholder="••••••••" className="input-field pr-10" />
+                <button type="button" onClick={() => setShowPwd(!showPwd)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                  {showPwd ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+              {errors.password && <p className="text-xs text-red-500 mt-1">{errors.password.message}</p>}
+            </div> */}
+
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-sm font-medium text-gray-700">Password</label>
+                <Link href="/forgot-password" className="text-xs text-gem-600 hover:text-gem-800 font-medium">
+                  Forgot password?
+                </Link>
+              </div>
               <div className="relative">
                 <input {...register('password')} type={showPwd ? 'text' : 'password'}
                   placeholder="••••••••" className="input-field pr-10" />
