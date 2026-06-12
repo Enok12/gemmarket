@@ -24,6 +24,9 @@ model User {
   email      String    @unique
   password   String
   phone      String?
+  whatsapp   String?
+  telegram   String?
+  line       String?
   role       Role      @default(USER)
   isVerified Boolean   @default(false)
   createdAt  DateTime  @default(now())
@@ -43,6 +46,8 @@ model Listing {
   origin             String?
   description        String        @db.Text
   whatsappNumber     String
+  telegram           String?
+  line               String?
   location           String?
   isCertified        Boolean       @default(false)
   availability       String        @default("Available")

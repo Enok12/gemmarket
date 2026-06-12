@@ -19,6 +19,9 @@ export async function GET(req) {
         name:      true,
         email:     true,
         phone:     true,
+        whatsapp:   true,
+        telegram:   true,
+        line:       true,
         role:      true,
         isVerified: true,
         createdAt: true,
@@ -58,13 +61,25 @@ export async function PATCH(req) {
     const body = await req.json()
 
     // Handle profile update
-    if (body.type === 'profile') {
+   if (body.type === 'profile') {
       const schema = z.object({
-        name:  z.string().min(2, 'Name must be at least 2 characters'),
-        phone: z.string()
-                 .regex(/^\+[1-9]\d{6,14}$/, 'Phone must include country code e.g. +94771234567')
-                 .optional()
-                 .or(z.literal('')),
+        name:     z.string().min(2, 'Name must be at least 2 characters'),
+        phone:    z.string()
+                  .regex(/^\+[1-9]\d{6,14}$/, 'Phone must include country code e.g. +94771234567')
+                  .optional()
+                  .or(z.literal('')),
+        whatsapp: z.string()
+                  .regex(/^\+[1-9]\d{6,14}$/, 'WhatsApp must include country code e.g. +94771234567')
+                  .optional()
+                  .or(z.literal('')),
+        telegram: z.string()
+                  .regex(/^@?[a-zA-Z0-9_]{4,32}$/, 'Enter a valid Telegram username e.g. @username')
+                  .optional()
+                  .or(z.literal('')),
+        line:     z.string()
+                  .min(4, 'Line ID must be at least 4 characters')
+                  .optional()
+                  .or(z.literal('')),
       })
 
       const parsed = schema.safeParse(body)
@@ -73,10 +88,17 @@ export async function PATCH(req) {
       const updated = await prisma.user.update({
         where: { id: currentUser.userId },
         data: {
-          name:  parsed.data.name,
-          phone: parsed.data.phone || null,
+          name:     parsed.data.name,
+          phone:    parsed.data.phone    || null,
+          whatsapp: parsed.data.whatsapp || null,
+          telegram: parsed.data.telegram || null,
+          line:     parsed.data.line     || null,
         },
-        select: { id: true, name: true, email: true, phone: true, role: true },
+        select: {
+          id: true, name: true, email: true,
+          phone: true, whatsapp: true, telegram: true, line: true,
+          role: true,
+        },
       })
 
       return apiSuccess(updated)

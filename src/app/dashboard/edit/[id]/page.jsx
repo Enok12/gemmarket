@@ -25,6 +25,8 @@ const schema = z.object({
   origin:         z.string().optional(),
   description:    z.string().min(20, 'Description must be at least 20 characters'),
   whatsappNumber: z.string().min(7),
+  telegram:       z.string().optional().or(z.literal('')),
+  line:           z.string().optional().or(z.literal('')),
   location:       z.string().optional(),
   isCertified:    z.boolean().default(false),
   availability:   z.enum(['Available', 'Sold']).default('Available'),
@@ -87,6 +89,8 @@ export default function EditListingPage() {
         origin:         l.origin,
         description:    l.description,
         whatsappNumber: l.whatsappNumber,
+        telegram:       l.telegram || '',
+        line:           l.line     || '',
         location:       l.location,
         isCertified:    l.isCertified,
         availability:   l.availability || 'Available',
@@ -289,7 +293,7 @@ export default function EditListingPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">WhatsApp number</label>
-              <input {...register('whatsappNumber')} className="input-field" />
+              <input {...register('whatsappNumber')} className="input-field" placeholder="+94771234567" />
               {errors.whatsappNumber && <p className="text-xs text-red-500 mt-1">{errors.whatsappNumber.message}</p>}
             </div>
             <div>
@@ -298,6 +302,20 @@ export default function EditListingPage() {
                 <option value="">Select location… (optional)</option>
                 {LOCATIONS.map((l) => <option key={l} value={l}>{l}</option>)}
               </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                Telegram <span className="text-gray-400 font-normal">(optional)</span>
+              </label>
+              <input {...register('telegram')} type="text" placeholder="@username" className="input-field" />
+              {errors.telegram && <p className="text-xs text-red-500 mt-1">{errors.telegram.message}</p>}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                Line ID <span className="text-gray-400 font-normal">(optional)</span>
+              </label>
+              <input {...register('line')} type="text" placeholder="Your Line ID" className="input-field" />
+              {errors.line && <p className="text-xs text-red-500 mt-1">{errors.line.message}</p>}
             </div>
           </div>
         </section>

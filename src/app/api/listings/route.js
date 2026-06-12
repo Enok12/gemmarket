@@ -17,6 +17,8 @@ const createSchema = z.object({
   origin:         z.string().optional(),
   description:    z.string().min(20),
   whatsappNumber: z.string().min(7),
+  telegram:       z.string().optional().or(z.literal('')),
+  line:           z.string().optional().or(z.literal('')),
   location:       z.string().optional(),
   isCertified:    z.boolean().default(false),
   certificationImage: z.string().optional(),

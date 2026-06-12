@@ -15,6 +15,8 @@ const updateSchema = z.object({
   origin:         z.string().optional(),
   description:    z.string().min(20).optional(),
   whatsappNumber: z.string().optional(),
+  telegram:       z.string().optional().or(z.literal('')),
+  line:           z.string().optional().or(z.literal('')),
   location:       z.string().optional(),
   isCertified:    z.boolean().optional(),
   certificationImage: z.string().optional(),

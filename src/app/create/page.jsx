@@ -24,6 +24,8 @@ const schema = z.object({
   origin:         z.string().optional(),
   description:    z.string().min(20, 'Description must be at least 20 characters'),
   whatsappNumber: z.string().min(7, 'Enter your WhatsApp number'),
+  telegram:       z.string().optional().or(z.literal('')),
+  line:           z.string().optional().or(z.literal('')),
   location:       z.string().optional(),
   availability:   z.enum(['Available', 'Sold']).default('Available'),
   isCertified:    z.boolean().default(false),
@@ -35,15 +37,42 @@ export default function CreateListingPage() {
   const [loading, setLoading] = useState(false)
   const [images, setImages]   = useState([])
   const [video, setVideo]   = useState(null)   
+  const [loadingProfile, setLoadingProfile] = useState(false)
 
-  const { register, handleSubmit, control, watch, formState: { errors } } = useForm({
-    resolver: zodResolver(schema),
-    defaultValues: { isCertified: false },
-  })
+
+  const { register, handleSubmit, control, watch, setValue, formState: { errors } } = useForm({
+  resolver: zodResolver(schema),
+  defaultValues: { isCertified: false, availability: 'Available' },
+})
 
   useEffect(() => {
     if (!user) router.push('/login?redirect=/create')
   }, [user, router])
+
+  useEffect(() => {
+  if (!user || !token) return
+  fetchAndFillProfile()
+}, [user, token])
+
+async function fetchAndFillProfile() {
+  setLoadingProfile(true)
+  try {
+    const res  = await fetch('/api/account', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    const data = await res.json()
+    if (data.success) {
+      const u = data.data
+      setValue('whatsappNumber', u.whatsapp || '')
+      setValue('telegram',       u.telegram || '')
+      setValue('line',           u.line     || '')
+    }
+  } catch {
+    // silently fail — user can fill manually
+  } finally {
+    setLoadingProfile(false)
+  }
+}
 
   async function onSubmit(data) {
     if (images.length === 0) {
@@ -60,6 +89,8 @@ export default function CreateListingPage() {
         },
         body: JSON.stringify({
           ...data,
+          telegram: data.telegram || null,
+          line:     data.line     || null,
           images: images.map((img) => ({ imageUrl: img.url, publicId: img.publicId })),
           videos: video ? [{ videoUrl: video.url, publicId: video.publicId }] : [], 
 
@@ -286,24 +317,34 @@ export default function CreateListingPage() {
           </div>
         </section>
 
-        {/* ── Contact & location ── */}
+       {/* ── Contact & location ── */}
         <section className="bg-white border border-gray-200 rounded-xl p-6 space-y-4">
-          <h2 className="text-sm font-semibold text-gray-900">Contact & location</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-gray-900">Contact & location</h2>
+            {loadingProfile && (
+              <span className="text-xs text-gray-400 flex items-center gap-1">
+                <Loader2 size={12} className="animate-spin" /> Auto-filling from profile…
+              </span>
+            )}
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+            {/* WhatsApp */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
                 WhatsApp number <span className="text-red-500">*</span>
               </label>
               <input
                 {...register('whatsappNumber')}
-                placeholder="e.g. 94771234567"
+                placeholder="+94771234567"
                 className="input-field"
               />
-              <p className="text-xs text-gray-400 mt-1">Include country code. Number is kept private — buyers get a link only.</p>
+              <p className="text-xs text-gray-400 mt-1">Include country code. Number is kept private.</p>
               {errors.whatsappNumber && <p className="text-xs text-red-500 mt-1">{errors.whatsappNumber.message}</p>}
             </div>
 
+            {/* Location */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
                 Your location <span className="text-gray-400 font-normal">(optional)</span>
@@ -312,8 +353,36 @@ export default function CreateListingPage() {
                 <option value="">Select location… (optional)</option>
                 {LOCATIONS.map((l) => <option key={l} value={l}>{l}</option>)}
               </select>
-              {errors.location && <p className="text-xs text-red-500 mt-1">{errors.location.message}</p>}
             </div>
+
+            {/* Telegram */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                Telegram <span className="text-gray-400 font-normal">(optional)</span>
+              </label>
+              <input
+                {...register('telegram')}
+                type="text"
+                placeholder="@username"
+                className="input-field"
+              />
+              {errors.telegram && <p className="text-xs text-red-500 mt-1">{errors.telegram.message}</p>}
+            </div>
+
+            {/* Line */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                Line ID <span className="text-gray-400 font-normal">(optional)</span>
+              </label>
+              <input
+                {...register('line')}
+                type="text"
+                placeholder="Your Line ID"
+                className="input-field"
+              />
+              {errors.line && <p className="text-xs text-red-500 mt-1">{errors.line.message}</p>}
+            </div>
+
           </div>
         </section>
 
