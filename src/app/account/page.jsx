@@ -16,24 +16,24 @@ import {
 import { useLogout } from '@/hooks/useLogout'
 
 const profileSchema = z.object({
-  name:     z.string().min(2, 'Name must be at least 2 characters'),
-  phone:    z.string()
-             .regex(/^\+[1-9]\d{6,14}$/, 'Phone must include country code e.g. +94771234567')
-             .optional()
-             .or(z.literal('')),
-  whatsapp: z.string()
-             .regex(/^\+[1-9]\d{6,14}$/, 'WhatsApp must include country code e.g. +94771234567')
-             .optional()
-             .or(z.literal('')),
-  telegram: z.string()
-             .regex(/^@?[a-zA-Z0-9_]{4,32}$/, 'Enter a valid Telegram username e.g. @username')
-             .optional()
-             .transform(v => v || null),
-
-  line:     z.string()
-             .min(4, 'Line ID must be at least 4 characters')
-             .optional()
-             .transform(v => v || null),
+  name:           z.string().min(2, 'Name must be at least 2 characters'),
+  phone:          z.string()
+                   .regex(/^\+[1-9]\d{6,14}$/, 'Phone must include country code e.g. +94771234567')
+                   .optional()
+                   .or(z.literal('')),
+  whatsapp:       z.string()
+                   .regex(/^\+[1-9]\d{6,14}$/, 'WhatsApp must include country code e.g. +94771234567')
+                   .optional()
+                   .or(z.literal('')),
+  telegram:       z.string()
+                   .regex(/^@?[a-zA-Z0-9_]{4,32}$/, 'Enter a valid Telegram username e.g. @username')
+                   .optional()
+                   .transform(v => v || null),
+  line:           z.string()
+                   .min(4, 'Line ID must be at least 4 characters')
+                   .optional()
+                   .transform(v => v || null),
+  primaryContact: z.enum(['WHATSAPP', 'LINE', 'TELEGRAM']).default('WHATSAPP'),
 })
 
 const passwordSchema = z.object({
@@ -87,11 +87,12 @@ export default function AccountPage() {
       if (data.success) {
         setProfile(data.data)
         resetProfile({
-          name:     data.data.name,
-          phone:    data.data.phone    || '',
-          whatsapp: data.data.whatsapp || '',
-          telegram: data.data.telegram || '',
-          line:     data.data.line     || '',
+          name:           data.data.name,
+          phone:          data.data.phone          || '',
+          whatsapp:       data.data.whatsapp       || '',
+          telegram:       data.data.telegram       || '',
+          line:           data.data.line           || '',
+          primaryContact: data.data.primaryContact || 'WHATSAPP',
         })
       }
     } catch {
@@ -115,7 +116,7 @@ export default function AccountPage() {
       const result = await res.json()
       if (result.success) {
         setProfile((prev) => ({ ...prev, ...result.data }))
-        login({ ...user, name: result.data.name }, token)
+        login({ ...user, name: result.data.name, primaryContact: result.data.primaryContact }, token)
         toast.success('Profile updated successfully')
       } else {
         toast.error(result.error || 'Update failed')
@@ -284,6 +285,17 @@ export default function AccountPage() {
             </p>
 
             <div className="space-y-4">
+
+              {/* Primary contact preference */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Primary contact</label>
+                <select {...registerProfile('primaryContact')} className="input-field">
+                  <option value="WHATSAPP">WhatsApp</option>
+                  <option value="LINE">Line</option>
+                  <option value="TELEGRAM">Telegram</option>
+                </select>
+                <p className="text-xs text-gray-400 mt-1">Sellers will see this contact method first on your listings</p>
+              </div>
 
               {/* WhatsApp */}
               <div>

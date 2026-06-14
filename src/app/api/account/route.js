@@ -15,16 +15,17 @@ export async function GET(req) {
     const user = await prisma.user.findUnique({
       where: { id: currentUser.userId },
       select: {
-        id:        true,
-        name:      true,
-        email:     true,
-        phone:     true,
-        whatsapp:   true,
-        telegram:   true,
-        line:       true,
-        role:      true,
-        isVerified: true,
-        createdAt: true,
+        id:             true,
+        name:           true,
+        email:          true,
+        phone:          true,
+        whatsapp:       true,
+        telegram:       true,
+        line:           true,
+        primaryContact: true,
+        role:           true,
+        isVerified:     true,
+        createdAt:      true,
         listings:  {
           select: {
             id:       true,
@@ -76,10 +77,11 @@ export async function PATCH(req) {
                   .regex(/^@?[a-zA-Z0-9_]{4,32}$/, 'Enter a valid Telegram username e.g. @username')
                   .optional()
                   .or(z.literal('')),
-        line:     z.string()
-                  .min(4, 'Line ID must be at least 4 characters')
-                  .optional()
-                  .or(z.literal('')),
+        line:           z.string()
+                          .min(4, 'Line ID must be at least 4 characters')
+                          .optional()
+                          .or(z.literal('')),
+        primaryContact: z.enum(['WHATSAPP', 'LINE', 'TELEGRAM']).optional(),
       })
 
       const parsed = schema.safeParse(body)
@@ -88,16 +90,17 @@ export async function PATCH(req) {
       const updated = await prisma.user.update({
         where: { id: currentUser.userId },
         data: {
-          name:     parsed.data.name,
-          phone:    parsed.data.phone    || null,
-          whatsapp: parsed.data.whatsapp || null,
-          telegram: parsed.data.telegram || null,
-          line:     parsed.data.line     || null,
+          name:           parsed.data.name,
+          phone:          parsed.data.phone          || null,
+          whatsapp:       parsed.data.whatsapp       || null,
+          telegram:       parsed.data.telegram       || null,
+          line:           parsed.data.line           || null,
+          ...(parsed.data.primaryContact && { primaryContact: parsed.data.primaryContact }),
         },
         select: {
           id: true, name: true, email: true,
           phone: true, whatsapp: true, telegram: true, line: true,
-          role: true,
+          primaryContact: true, role: true,
         },
       })
 

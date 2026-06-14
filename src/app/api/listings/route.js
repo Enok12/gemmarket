@@ -75,7 +75,7 @@ export async function GET(req) {
         include: {
           images:   { take: 1 },
           videos:   true,
-          user:     { select: { id: true, name: true } },
+          user:     { select: { id: true, name: true, telegram: true, line: true } },
           tracking: { select: { whatsappClicks: true } },
         },
       }),

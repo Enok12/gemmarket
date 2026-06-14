@@ -42,7 +42,7 @@ export async function POST(req) {
     const token = signToken({ userId: user.id, email: user.email, role: user.role })
 
     return apiSuccess({
-      user: { id: user.id, name: user.name, email: user.email, role: user.role, createdAt: user.createdAt },
+      user: { id: user.id, name: user.name, email: user.email, role: user.role, createdAt: user.createdAt, primaryContact: user.primaryContact },
       token,
     })
   } catch (err) {

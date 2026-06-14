@@ -12,6 +12,12 @@ enum Role {
   ADMIN
 }
 
+enum ContactPreference {
+  WHATSAPP
+  LINE
+  TELEGRAM
+}
+
 enum ListingStatus {
   PENDING
   APPROVED
@@ -27,6 +33,7 @@ model User {
   whatsapp   String?
   telegram   String?
   line       String?
+  primaryContact ContactPreference @default(WHATSAPP)
   role       Role      @default(USER)
   isVerified Boolean   @default(false)
   createdAt  DateTime  @default(now())

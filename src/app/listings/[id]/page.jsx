@@ -2,8 +2,10 @@ export const dynamic = 'force-dynamic'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
+import { cookies } from 'next/headers'
 import { prisma } from '@/lib/prisma'
 import { getGemColor } from '@/lib/utils'
+import { verifyToken } from '@/lib/auth'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import {
   MapPin, Scale, Shield, ShieldOff,
@@ -33,11 +35,42 @@ export async function generateMetadata({ params }) {
   }
 }
 
+async function getViewerPreference() {
+  try {
+    const cookieStore = cookies()
+    const token = cookieStore.get('token')?.value
+    if (!token) return 'WHATSAPP'
+    const { userId } = verifyToken(token)
+    const viewer = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { primaryContact: true },
+    })
+    return viewer?.primaryContact ?? 'WHATSAPP'
+  } catch {
+    return 'WHATSAPP'
+  }
+}
+
 export default async function ListingDetailPage({ params }) {
-  const listing = await getListing(params.id)
+  const [listing, viewerPreference] = await Promise.all([
+    getListing(params.id),
+    getViewerPreference(),
+  ])
   if (!listing) notFound()
 
   const gemColor = getGemColor(listing.gemType)
+
+  // Build ordered contact list based on viewer's preference
+  const available = {
+    WHATSAPP: listing.whatsappNumber,
+    TELEGRAM: listing.telegram || listing.user.telegram || null,
+    LINE:     listing.line     || listing.user.line     || null,
+  }
+  const ORDER = ['WHATSAPP', 'TELEGRAM', 'LINE']
+  const sorted = [viewerPreference, ...ORDER.filter(k => k !== viewerPreference)]
+    .filter(k => available[k])
+  const primaryContact  = sorted[0]  ?? 'WHATSAPP'
+  const secondaryContacts = sorted.slice(1)
 
   const specs = [
     { icon: <Scale size={15} />,    label: 'Carat weight', value: `${listing.carat} ct` },
@@ -207,17 +240,45 @@ export default async function ListingDetailPage({ params }) {
             </div>
           </div>
 
-          {/* WhatsApp CTA */}
-          <WhatsAppButton listingId={listing.id} listingTitle={listing.title} />
+          {/* Primary contact CTA */}
+          {primaryContact === 'WHATSAPP' && (
+            <WhatsAppButton listingId={listing.id} listingTitle={listing.title} />
+          )}
+          {primaryContact === 'TELEGRAM' && (
+            <a
+              href={`https://t.me/${available.TELEGRAM.replace('@', '')}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl transition-colors"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+              </svg>
+              Contact via Telegram
+            </a>
+          )}
+          {primaryContact === 'LINE' && (
+            <a
+              href={`https://line.me/ti/p/${available.LINE}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-[#06C755] hover:bg-[#05b34c] text-white font-semibold rounded-xl transition-colors"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19.365 9.863c.349 0 .63.285.63.63 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.070 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/>
+              </svg>
+              Contact via Line
+            </a>
+          )}
 
-          {/* Social contacts */}
-            {(listing.user.whatsapp || listing.user.telegram || listing.user.line || listing.telegram || listing.line) && (
-              <div className="space-y-2">
+          {/* Secondary contacts */}
+          {secondaryContacts.length > 0 && (
+            <div className="space-y-2">
               <p className="text-xs text-gray-500 font-medium">Also contact via:</p>
               <div className="flex flex-wrap gap-2">
-                {listing.user.whatsapp && (
-                  <a // <-- Missing tag opened here
-                    href={`https://wa.me/${listing.user.whatsapp.replace(/\D/g, '')}`}
+                {secondaryContacts.includes('WHATSAPP') && (
+                  <a
+                    href={`https://wa.me/${listing.whatsappNumber.replace(/\D/g, '')}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 px-4 py-2 bg-green-50 text-green-700 border border-green-200 text-sm font-medium rounded-lg hover:bg-green-100 transition-colors"
@@ -228,9 +289,9 @@ export default async function ListingDetailPage({ params }) {
                     WhatsApp
                   </a>
                 )}
-
-               {(listing.telegram || listing.user.telegram) && (
-                 <a href={`https://t.me/${(listing.telegram || listing.user.telegram).replace('@', '')}`}
+                {secondaryContacts.includes('TELEGRAM') && (
+                  <a
+                    href={`https://t.me/${available.TELEGRAM.replace('@', '')}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 border border-blue-200 text-sm font-medium rounded-lg hover:bg-blue-100 transition-colors"
@@ -241,10 +302,9 @@ export default async function ListingDetailPage({ params }) {
                     Telegram
                   </a>
                 )}
-
-                {(listing.line || listing.user.line) && (
-                  <a 
-                    href={`https://line.me/ti/p/${(listing.line || listing.user.line)}`}
+                {secondaryContacts.includes('LINE') && (
+                  <a
+                    href={`https://line.me/ti/p/${available.LINE}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 px-4 py-2 bg-green-50 text-green-800 border border-green-300 text-sm font-medium rounded-lg hover:bg-green-100 transition-colors"
@@ -257,7 +317,7 @@ export default async function ListingDetailPage({ params }) {
                 )}
               </div>
             </div>
-          )}  
+          )}
 
           <p className="text-xs text-gray-400 text-center">
             {listing.tracking?.whatsappClicks ?? 0} people have contacted this seller

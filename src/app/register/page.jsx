@@ -19,6 +19,7 @@ const schema = z.object({
                      .regex(/^\+[1-9]\d{6,14}$/, 'Phone must include country code e.g. +94771234567')
                      .optional()
                      .or(z.literal('')),
+  primaryContact:  z.enum(['WHATSAPP', 'LINE', 'TELEGRAM']).default('WHATSAPP'),
 }).refine((d) => d.password === d.confirmPassword, {
   message: 'Passwords do not match',
   path: ['confirmPassword'],
@@ -40,11 +41,12 @@ export default function RegisterPage() {
       const res    = await fetch('/api/auth/register', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          name:     data.name, 
-          email:    data.email, 
-          password: data.password,
-          phone:    data.phone || undefined,
+        body: JSON.stringify({
+          name:           data.name,
+          email:          data.email,
+          password:       data.password,
+          phone:          data.phone || undefined,
+          primaryContact: data.primaryContact,
         }),
       })
       const result = await res.json()
@@ -98,6 +100,16 @@ export default function RegisterPage() {
               />
               <p className="text-xs text-gray-400 mt-1">Include country code e.g. +94 for Sri Lanka</p>
               {errors.phone && <p className="text-xs text-red-500 mt-1">{errors.phone.message}</p>}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Primary contact</label>
+              <select {...register('primaryContact')} className="input-field">
+                <option value="WHATSAPP">WhatsApp</option>
+                <option value="LINE">Line</option>
+                <option value="TELEGRAM">Telegram</option>
+              </select>
+              <p className="text-xs text-gray-400 mt-1">Your preferred messaging app for contacting sellers</p>
             </div>
 
             <div>

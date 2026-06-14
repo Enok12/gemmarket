@@ -36,6 +36,7 @@ export function AuthProvider({ children }) {
     setToken(newToken)
     localStorage.setItem('gem_token', newToken)
     localStorage.setItem('gem_user', JSON.stringify(newUser))
+    document.cookie = `token=${newToken}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`
   }
 
   function logout() {
@@ -43,6 +44,7 @@ export function AuthProvider({ children }) {
     setToken(null)
     localStorage.removeItem('gem_token')
     localStorage.removeItem('gem_user')
+    document.cookie = 'token=; path=/; max-age=0'
   }
 
   return (
