@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { MessageCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import ContactGate from './ContactGate'
 
 export default function WhatsAppButton({ listingId, listingTitle, compact = false, className }) {
   const [loading, setLoading] = useState(false)
@@ -27,19 +28,21 @@ export default function WhatsAppButton({ listingId, listingTitle, compact = fals
   }
 
   return (
-    <button
-      onClick={handleClick}
-      disabled={loading}
-      className={cn(
-        'flex items-center justify-center gap-2 font-medium rounded-lg transition-colors',
-        'bg-[#25D366] hover:bg-[#20bd5a] text-white',
-        compact ? 'w-full py-2 text-sm' : 'px-6 py-3 text-base',
-        loading && 'opacity-75 cursor-not-allowed',
-        className
-      )}
-    >
-      <MessageCircle size={compact ? 15 : 18} />
-      {loading ? 'Opening…' : compact ? 'Chat on WhatsApp' : 'Contact Seller on WhatsApp'}
-    </button>
+    <ContactGate>
+      <button
+        onClick={handleClick}
+        disabled={loading}
+        className={cn(
+          'flex items-center justify-center gap-2 font-medium rounded-lg transition-colors',
+          'bg-[#25D366] hover:bg-[#20bd5a] text-white',
+          compact ? 'w-full py-2 text-sm' : 'px-6 py-3 text-base',
+          loading && 'opacity-75 cursor-not-allowed',
+          className
+        )}
+      >
+        <MessageCircle size={compact ? 15 : 18} />
+        {loading ? 'Opening…' : compact ? 'Chat on WhatsApp' : 'Contact Seller on WhatsApp'}
+      </button>
+    </ContactGate>
   )
 }
