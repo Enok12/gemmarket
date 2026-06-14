@@ -15,6 +15,11 @@
       "splashFullScreen": true,
       "splashImmersive": true,
       "androidScaleType": "CENTER_CROP"
+    },
+    "StatusBar": {
+      "overlaysWebView": false,
+      "style": "DARK",
+      "backgroundColor": "#ffffff"
     }
   }
 }
