@@ -290,9 +290,9 @@ export default async function HomePage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
               { icon: <Gem size={22} />,           step: '01', title: 'Create an account',    desc: 'Register free in under a minute. No subscription needed.' },
-              { icon: <Search size={22} />,        step: '02', title: 'Post your listing',    desc: 'Upload photos, set gem specs, price, and your WhatsApp number.' },
-              { icon: <Shield size={22} />,        step: '03', title: 'Get approved',         desc: 'Our team reviews listings within 24 hours for quality.' },
-              { icon: <MessageCircle size={22} />, step: '04', title: 'Chat on WhatsApp',     desc: 'Buyers reach you directly — no middlemen, no commissions.' },
+              { icon: <Search size={22} />,        step: '02', title: 'Post your listing',    desc: 'Upload photos, set gem specs, price, and your WhatsApp number/ Telegram / Line.' },
+              { icon: <Shield size={22} />,        step: '03', title: 'Get approved',         desc: 'Our team reviews listings instantly for quality.' },
+              { icon: <MessageCircle size={22} />, step: '04', title: 'Chat on WhatsApp / Telegram / Line',     desc: 'Buyers reach you directly — no middlemen, no commissions.' },
             ].map(({ icon, step, title, desc }) => (
               <div key={step} className="flex flex-col items-center text-center">
                 <div className="w-12 h-12 bg-gem-50 text-gem-600 rounded-xl flex items-center justify-center mb-4">{icon}</div>
