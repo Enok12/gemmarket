@@ -16,7 +16,8 @@ import VideoUpload from '@/components/VideoUpload'
 
 const schema = z.object({
   title:          z.string().min(5, 'Title must be at least 5 characters'),
-  price:          z.number({ invalid_type_error: 'Enter a valid price' }).positive(),
+  priceOnInquiry: z.boolean().default(false),
+  price:          z.number({ invalid_type_error: 'Enter a valid price' }).positive().optional(),
   gemType:        z.string().min(1, 'Select a gem type'),
   carat:          z.number({ invalid_type_error: 'Enter a valid carat weight' }).positive(),
   color:          z.string().min(1),
@@ -46,9 +47,10 @@ export default function EditListingPage() {
   const [video, setVideo]   = useState(null)   // ← add this
 
 
-  const { register, handleSubmit, reset, control, formState: { errors, isDirty } } = useForm({
+  const { register, handleSubmit, reset, control, watch, setValue, formState: { errors, isDirty } } = useForm({
     resolver: zodResolver(schema),
   })
+  const priceOnInquiry = watch('priceOnInquiry')
 
   useEffect(() => {
     if (!user) { router.push('/login'); return }
@@ -80,7 +82,8 @@ export default function EditListingPage() {
 
       reset({
         title:          l.title,
-        price:          l.price,
+        priceOnInquiry: l.price === null,
+        price:          l.price ?? undefined,
         gemType:        l.gemType,
         carat:          l.carat,
         color:          l.color,
@@ -120,9 +123,9 @@ export default function EditListingPage() {
         },
         body: JSON.stringify({
           ...data,
+          price:    data.priceOnInquiry ? null : data.price,
           images: images.map((img) => ({ imageUrl: img.url, publicId: img.publicId })),
           videos: video ? [{ videoUrl: video.url, publicId: video.publicId }] : [],
-
         }),
       })
       const result = await res.json()
@@ -212,16 +215,31 @@ export default function EditListingPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Price (USD)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                Price (USD) {!priceOnInquiry && <span className="text-red-500">*</span>}
+              </label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
                 <input
                   {...register('price', { valueAsNumber: true })}
                   type="number" step="0.01"
-                  className="input-field pl-7"
+                  disabled={priceOnInquiry}
+                  className={`input-field pl-7 ${priceOnInquiry ? 'bg-gray-50 text-gray-400 cursor-not-allowed' : ''}`}
                 />
               </div>
-              {errors.price && <p className="text-xs text-red-500 mt-1">{errors.price.message}</p>}
+              {errors.price && !priceOnInquiry && <p className="text-xs text-red-500 mt-1">{errors.price.message}</p>}
+              <label className="flex items-center gap-2 mt-2 cursor-pointer w-fit">
+                <input
+                  type="checkbox"
+                  {...register('priceOnInquiry')}
+                  onChange={(e) => {
+                    register('priceOnInquiry').onChange(e)
+                    if (e.target.checked) setValue('price', undefined)
+                  }}
+                  className="rounded border-gray-300 text-gem-600 focus:ring-gem-300"
+                />
+                <span className="text-sm text-gray-600">Price on Inquiry <span className="text-gray-400">(hide price from buyers)</span></span>
+              </label>
             </div>
           </div>
 

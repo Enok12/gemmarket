@@ -6,7 +6,7 @@ import { apiSuccess, apiError } from '@/lib/utils'
 
 const updateSchema = z.object({
   title:          z.string().min(5).optional(),
-  price:          z.number().positive().optional(),
+  price:          z.number().positive().nullable().optional(),
   gemType:        z.string().optional(),
   carat:          z.number().positive().optional(),
   color:          z.string().optional(),
@@ -65,7 +65,7 @@ export async function PATCH(req, { params }) {
     if (!parsed.success) return apiError(parsed.error.errors[0].message, 422)
 
     // Reset to PENDING if owner changes content (needs re-approval)
-    const contentChanged = parsed.data.title || parsed.data.description || parsed.data.price
+    const contentChanged = parsed.data.title || parsed.data.description || 'price' in parsed.data
 
     const { images, videos, ...listingFields } = parsed.data
 

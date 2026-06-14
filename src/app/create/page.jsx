@@ -15,7 +15,8 @@ import VideoUpload from '@/components/VideoUpload'
 
 const schema = z.object({
   title:          z.string().min(5, 'Title must be at least 5 characters'),
-  price:          z.number({ invalid_type_error: 'Enter a valid price' }).positive('Price must be positive'),
+  priceOnInquiry: z.boolean().default(false),
+  price:          z.number({ invalid_type_error: 'Enter a valid price' }).positive('Price must be positive').optional(),
   gemType:        z.string().min(1, 'Select a gem type'),
   carat:          z.number({ invalid_type_error: 'Enter a valid carat weight' }).positive('Must be positive'),
   color:          z.string().min(1, 'Color is required'),
@@ -42,7 +43,7 @@ export default function CreateListingPage() {
 
   const { register, handleSubmit, control, watch, setValue, formState: { errors } } = useForm({
   resolver: zodResolver(schema),
-  defaultValues: { isCertified: false, availability: 'Available' },
+  defaultValues: { isCertified: false, availability: 'Available', priceOnInquiry: false },
 })
 
   useEffect(() => {
@@ -89,11 +90,11 @@ async function fetchAndFillProfile() {
         },
         body: JSON.stringify({
           ...data,
+          price:    data.priceOnInquiry ? null : data.price,
           telegram: data.telegram || null,
           line:     data.line     || null,
           images: images.map((img) => ({ imageUrl: img.url, publicId: img.publicId })),
-          videos: video ? [{ videoUrl: video.url, publicId: video.publicId }] : [], 
-
+          videos: video ? [{ videoUrl: video.url, publicId: video.publicId }] : [],
         }),
       })
       const result = await res.json()
@@ -112,7 +113,8 @@ async function fetchAndFillProfile() {
 
   if (!user) return null
 
-  const descLength = watch('description')?.length ?? 0
+  const descLength     = watch('description')?.length ?? 0
+  const priceOnInquiry = watch('priceOnInquiry')
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -180,7 +182,7 @@ async function fetchAndFillProfile() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Asking price (USD) <span className="text-red-500">*</span>
+                Asking price (USD) {!priceOnInquiry && <span className="text-red-500">*</span>}
               </label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
@@ -188,10 +190,23 @@ async function fetchAndFillProfile() {
                   {...register('price', { valueAsNumber: true })}
                   type="number" min="1" step="0.01"
                   placeholder="0.00"
-                  className="input-field pl-7"
+                  disabled={priceOnInquiry}
+                  className={`input-field pl-7 ${priceOnInquiry ? 'bg-gray-50 text-gray-400 cursor-not-allowed' : ''}`}
                 />
               </div>
-              {errors.price && <p className="text-xs text-red-500 mt-1">{errors.price.message}</p>}
+              {errors.price && !priceOnInquiry && <p className="text-xs text-red-500 mt-1">{errors.price.message}</p>}
+              <label className="flex items-center gap-2 mt-2 cursor-pointer w-fit">
+                <input
+                  type="checkbox"
+                  {...register('priceOnInquiry')}
+                  onChange={(e) => {
+                    register('priceOnInquiry').onChange(e)
+                    if (e.target.checked) setValue('price', undefined)
+                  }}
+                  className="rounded border-gray-300 text-gem-600 focus:ring-gem-300"
+                />
+                <span className="text-sm text-gray-600">Price on Inquiry <span className="text-gray-400">(hide price from buyers)</span></span>
+              </label>
             </div>
           </div>
 

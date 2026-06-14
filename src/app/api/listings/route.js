@@ -8,7 +8,7 @@ import { createListingLimiter, checkRateLimit } from '@/lib/ratelimit'
 
 const createSchema = z.object({
   title:          z.string().min(5),
-  price:          z.number().positive(),
+  price:          z.number().positive().nullable().optional(),
   gemType:        z.string().min(1),
   carat:          z.number().positive(),
   color:          z.string().min(1),

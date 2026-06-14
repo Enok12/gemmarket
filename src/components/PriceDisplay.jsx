@@ -6,6 +6,15 @@ import Link from 'next/link'
 export default function PriceDisplay({ price }) {
   const { user } = useAuth()
 
+  if (price === null || price === undefined) {
+    return (
+      <div>
+        <p className="text-2xl font-bold text-gray-700">Price on Inquiry</p>
+        <p className="text-xs text-gem-500 mt-1">Contact the seller to learn the price</p>
+      </div>
+    )
+  }
+
   if (user) {
     return <p className="text-3xl font-bold text-gem-700">${price.toLocaleString()}</p>
   }

@@ -44,7 +44,7 @@ model User {
 model Listing {
   id                 String        @id @default(cuid())
   title              String
-  price              Float
+  price              Float?
   gemType            String
   carat              Float
   color              String

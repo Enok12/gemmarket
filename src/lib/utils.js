@@ -15,6 +15,7 @@ export function apiError(message, status = 400) {
 }
 
 export function formatPrice(price) {
+  if (price === null || price === undefined) return 'Price on Inquiry'
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
