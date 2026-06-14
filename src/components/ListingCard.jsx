@@ -78,11 +78,12 @@ export default function ListingCard({ listing, showStatus = false }) {
         </div>
 
         <div className="flex items-center justify-between">
-          {listing.price === null || listing.price === undefined
-            ? <span className="text-base font-semibold text-gray-500 italic">Price on Inquiry</span>
-            : user
-              ? <span className="text-base font-bold text-gem-700">{formatPrice(listing.price)}</span>
-              : <span className="text-base font-bold text-gray-400 tracking-widest">••••••</span>
+          {user
+            ? (listing.price === null || listing.price === undefined
+                ? <span className="text-base font-semibold text-gray-500 italic">Price on Inquiry</span>
+                : <span className="text-base font-bold text-gem-700">{formatPrice(listing.price)}</span>
+              )
+            : <span className="text-base font-bold text-gray-400 tracking-widest">••••••</span>
           }
           {listing.isCertified ? (
             <span className="flex items-center gap-1 text-xs text-green-700 bg-green-50 px-2 py-0.5 rounded-full">
