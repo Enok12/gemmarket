@@ -4,7 +4,7 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function sendOtpEmail(email, name, otp) {
   await resend.emails.send({
-    from:    'GGMP <onboarding@resend.dev>',
+    from:    'GGMP <otp@ggmp.app>',
     to:      email,
     subject: 'Your GGMP verification code',
     html: `
@@ -33,7 +33,7 @@ export async function sendOtpEmail(email, name, otp) {
 
 export async function sendPasswordResetEmail(email, name, otp) {
   await resend.emails.send({
-    from:    'GGMP <onboarding@resend.dev>',
+    from:    'GGMP <resetpassword@ggmp.app>',
     to:      email,
     subject: 'Reset your GGMP password',
     html: `
