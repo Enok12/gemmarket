@@ -138,7 +138,7 @@ export default async function HomePage() {
           {/* Left — text */}
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 text-sm font-medium px-3 py-1 rounded-full mb-1"
-              style={{ backgroundColor: '#4169E115', color: '#4169E1' }}>
+              style={{ backgroundColor: '#4169E115', color: '#6235eb' }}>
               <Star size={13} /> World's 1# Online Gemstone Marketplace
             </div>
             {/* <h1 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight mb-5">
