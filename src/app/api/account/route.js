@@ -76,11 +76,13 @@ export async function PATCH(req) {
         telegram: z.string()
                   .regex(/^@?[a-zA-Z0-9_]{4,32}$/, 'Enter a valid Telegram username e.g. @username')
                   .optional()
-                  .or(z.literal('')),
+                  .or(z.literal(''))
+                  .nullable(),
         line:           z.string()
                           .min(4, 'Line ID must be at least 4 characters')
                           .optional()
-                          .or(z.literal('')),
+                          .or(z.literal(''))
+                          .nullable(),
         primaryContact: z.enum(['WHATSAPP', 'LINE', 'TELEGRAM']).optional(),
       })
 
