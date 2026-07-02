@@ -17,7 +17,10 @@ import VideoUpload from '@/components/VideoUpload'
 const schema = z.object({
   title:          z.string().min(5, 'Title must be at least 5 characters'),
   priceOnInquiry: z.boolean().default(false),
-  price:          z.number({ invalid_type_error: 'Enter a valid price' }).positive().optional(),
+  price:          z.preprocess(
+                    (v) => (v === '' || v === null || Number.isNaN(v) ? undefined : v),
+                    z.number({ invalid_type_error: 'Enter a valid price' }).positive().optional()
+                  ),
   gemType:        z.string().min(1, 'Select a gem type'),
   carat:          z.number({ invalid_type_error: 'Enter a valid carat weight' }).positive(),
   color:          z.string().min(1),
@@ -32,6 +35,9 @@ const schema = z.object({
   isCertified:    z.boolean().default(false),
   availability:   z.enum(['Available', 'Sold']).default('Available'),
 
+}).refine((d) => d.priceOnInquiry || (typeof d.price === 'number' && d.price > 0), {
+  message: 'Enter a valid price or select Price on Inquiry',
+  path: ['price'],
 })
 
 export default function EditListingPage() {
@@ -87,14 +93,14 @@ export default function EditListingPage() {
         gemType:        l.gemType,
         carat:          l.carat,
         color:          l.color,
-        clarity:        l.clarity,
-        cut:            l.cut || '',
-        origin:         l.origin,
+        clarity:        l.clarity  || '',
+        cut:            l.cut      || '',
+        origin:         l.origin   || '',
         description:    l.description,
         whatsappNumber: l.whatsappNumber,
         telegram:       l.telegram || '',
         line:           l.line     || '',
-        location:       l.location,
+        location:       l.location || '',
         isCertified:    l.isCertified,
         availability:   l.availability || 'Available',
 
@@ -180,7 +186,13 @@ export default function EditListingPage() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form
+        onSubmit={handleSubmit(onSubmit, (formErrors) => {
+          const first = Object.values(formErrors)[0]
+          toast.error(first?.message || 'Please fix the highlighted fields')
+        })}
+        className="space-y-6"
+      >
 
         {/* Photos */}
         <section className="bg-white border border-gray-200 rounded-xl p-6">

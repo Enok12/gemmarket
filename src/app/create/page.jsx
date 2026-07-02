@@ -16,7 +16,10 @@ import VideoUpload from '@/components/VideoUpload'
 const schema = z.object({
   title:          z.string().min(5, 'Title must be at least 5 characters'),
   priceOnInquiry: z.boolean().default(false),
-  price:          z.number({ invalid_type_error: 'Enter a valid price' }).positive('Price must be positive').optional(),
+  price:          z.preprocess(
+                    (v) => (v === '' || v === null || Number.isNaN(v) ? undefined : v),
+                    z.number({ invalid_type_error: 'Enter a valid price' }).positive('Price must be positive').optional()
+                  ),
   gemType:        z.string().min(1, 'Select a gem type'),
   carat:          z.number({ invalid_type_error: 'Enter a valid carat weight' }).positive('Must be positive'),
   color:          z.string().min(1, 'Color is required'),
@@ -30,6 +33,9 @@ const schema = z.object({
   location:       z.string().optional(),
   availability:   z.enum(['Available', 'Sold']).default('Available'),
   isCertified:    z.boolean().default(false),
+}).refine((d) => d.priceOnInquiry || (typeof d.price === 'number' && d.price > 0), {
+  message: 'Enter a valid price or select Price on Inquiry',
+  path: ['price'],
 })
 
 export default function CreateListingPage() {
