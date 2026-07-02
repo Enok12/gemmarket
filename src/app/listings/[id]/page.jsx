@@ -8,6 +8,7 @@ import { getGemColor } from '@/lib/utils'
 import { verifyToken } from '@/lib/auth'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import ContactGate from '@/components/ContactGate'
+import ShareButton from '@/components/ShareButton'
 import {
   MapPin, Scale, Shield, ShieldOff,
   ArrowLeft, Award, Layers, Scissors, Globe, Calendar, CheckCircle, XCircle
@@ -60,6 +61,7 @@ export default async function ListingDetailPage({ params }) {
   if (!listing) notFound()
 
   const gemColor = getGemColor(listing.gemType)
+  const shareUrl = `${process.env.NEXT_PUBLIC_APP_URL}/listings/${listing.id}`
 
   // Build ordered contact list based on viewer's preference
   const available = {
@@ -174,7 +176,10 @@ export default async function ListingDetailPage({ params }) {
                 </span>
               )}
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-1">{listing.title}</h1>
+            <div className="flex items-start justify-between gap-3">
+              <h1 className="text-2xl font-bold text-gray-900 mb-1">{listing.title}</h1>
+              <ShareButton url={shareUrl} title={listing.title} />
+            </div>
             <p className="text-sm text-gray-500">
               {listing.color} · {listing.carat} carats
               {listing.origin ? ` · from ${listing.origin}` : ''}
