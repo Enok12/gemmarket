@@ -1,19 +1,25 @@
 'use client'
+import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
 
 export default function ContactGate({ children }) {
   const { user } = useAuth()
+  const router   = useRouter()
 
   if (user) return children
 
+  // Guests: keep the button looking normal, but intercept the click
+  // (capture phase) and send them to Sign Up instead of contacting the seller.
   return (
-    <div className="relative group cursor-not-allowed">
-      <div className="opacity-40 pointer-events-none select-none">
-        {children}
-      </div>
-      <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs rounded-lg px-3 py-1.5 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">
-        Sign up free to contact the seller
-      </div>
+    <div
+      onClickCapture={(e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        router.push('/register')
+      }}
+      className="contents"
+    >
+      {children}
     </div>
   )
 }
