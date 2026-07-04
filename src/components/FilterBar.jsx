@@ -19,11 +19,19 @@ export default function FilterBar() {
   const clearAll = () => router.push('/listings')
 
   const hasFilters =
-    searchParams.get('gemType')  ||
-    searchParams.get('location') ||
+    searchParams.get('gemType')   ||
+    searchParams.get('stoneType') ||
+    searchParams.get('location')  ||
     searchParams.get('certified') ||
-    searchParams.get('minPrice') ||
+    searchParams.get('minPrice')  ||
     searchParams.get('maxPrice')
+
+  const activeStoneType = searchParams.get('stoneType') || ''
+  const STONE_TYPES = [
+    { value: '',                 label: 'All' },
+    { value: 'CUT_AND_POLISHED', label: 'Cut & Polished' },
+    { value: 'ROUGH',            label: 'Rough' },
+  ]
 
   return (
     <div className="bg-white border border-gray-200 rounded-xl p-4">
@@ -50,6 +58,27 @@ export default function FilterBar() {
             <option value="">All types</option>
             {GEM_TYPES.map((g) => <option key={g} value={g}>{g}</option>)}
           </select>
+        </div>
+
+        {/* Stone Type */}
+        <div>
+          <label className="block text-xs font-medium text-gray-500 mb-2">Stone Type</label>
+          <div className="grid grid-cols-3 gap-1.5">
+            {STONE_TYPES.map((s) => (
+              <button
+                key={s.value || 'all'}
+                type="button"
+                onClick={() => updateFilter('stoneType', s.value)}
+                className={`text-xs font-medium px-2 py-2 rounded-lg border transition-colors ${
+                  activeStoneType === s.value
+                    ? 'border-gem-500 bg-gem-50 text-gem-700'
+                    : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                {s.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Location */}

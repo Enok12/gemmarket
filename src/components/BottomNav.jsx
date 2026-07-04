@@ -27,7 +27,7 @@ export default function BottomNav() {
   // ── Nav items per role ──────────────────────────────────────
   const guestItems = [
     { label: 'Home',    icon: <Home size={20} />,         href: '/'         },
-    { label: 'Buy',     icon: <ShoppingBag size={20} />,  href: '/listings' },
+    { label: 'Buy',     icon: <ShoppingBag size={20} />,  href: '/gems' },
     { label: 'Sell',    icon: <Tag size={22} />,           href: '/register', center: true },
     { label: 'Account', icon: <User size={20} />,         href: '/login'    },
   ]

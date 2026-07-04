@@ -8,6 +8,7 @@ const updateSchema = z.object({
   title:          z.string().min(5).optional(),
   price:          z.number().positive().nullable().optional(),
   gemType:        z.string().optional(),
+  stoneType:      z.enum(['ROUGH', 'CUT_AND_POLISHED']).optional(),
   carat:          z.number().positive().optional(),
   color:          z.string().optional(),
   clarity:        z.string().optional(),

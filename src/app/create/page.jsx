@@ -21,6 +21,7 @@ const schema = z.object({
                     z.number({ invalid_type_error: 'Enter a valid price' }).positive('Price must be positive').optional()
                   ),
   gemType:        z.string().min(1, 'Select a gem type'),
+  stoneType:      z.enum(['ROUGH', 'CUT_AND_POLISHED']).default('CUT_AND_POLISHED'),
   carat:          z.number({ invalid_type_error: 'Enter a valid carat weight' }).positive('Must be positive'),
   color:          z.string().min(1, 'Color is required'),
   clarity:        z.string().optional(),
@@ -49,7 +50,7 @@ export default function CreateListingPage() {
 
   const { register, handleSubmit, control, watch, setValue, formState: { errors } } = useForm({
   resolver: zodResolver(schema),
-  defaultValues: { isCertified: false, availability: 'Available', priceOnInquiry: false },
+  defaultValues: { isCertified: false, availability: 'Available', priceOnInquiry: false, stoneType: 'CUT_AND_POLISHED' },
 })
 
   useEffect(() => {
@@ -172,6 +173,36 @@ async function fetchAndFillProfile() {
               className="input-field"
             />
             {errors.title && <p className="text-xs text-red-500 mt-1">{errors.title.message}</p>}
+          </div>
+
+          {/* Stone type */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              Stone type <span className="text-red-500">*</span>
+            </label>
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { value: 'CUT_AND_POLISHED', label: 'Cut & Polished', desc: 'Finished, faceted gem' },
+                { value: 'ROUGH',            label: 'Rough Stone',    desc: 'Uncut, natural rough' },
+              ].map((opt) => (
+                <label
+                  key={opt.value}
+                  className="flex items-start gap-2.5 p-3 border border-gray-200 rounded-xl cursor-pointer hover:border-gem-300 has-[:checked]:border-gem-500 has-[:checked]:bg-gem-50 transition-colors"
+                >
+                  <input
+                    type="radio"
+                    value={opt.value}
+                    {...register('stoneType')}
+                    className="mt-0.5 text-gem-600 focus:ring-gem-300"
+                  />
+                  <span>
+                    <span className="block text-sm font-medium text-gray-900">{opt.label}</span>
+                    <span className="block text-xs text-gray-500">{opt.desc}</span>
+                  </span>
+                </label>
+              ))}
+            </div>
+            {errors.stoneType && <p className="text-xs text-red-500 mt-1">{errors.stoneType.message}</p>}
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

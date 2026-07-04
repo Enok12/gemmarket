@@ -50,7 +50,7 @@ export default async function GemsPage() {
           return (
             <Link
               key={gem}
-              href={`/listings?gemType=${encodeURIComponent(gem)}`}
+              href={`/gems/${encodeURIComponent(gem)}`}
               className="group flex flex-col gap-1 px-4 py-3 bg-white border border-gray-200 rounded-xl hover:border-gem-400 hover:shadow-sm transition-all duration-150"
             >
               <span className="text-sm font-semibold text-gray-900 group-hover:text-gem-700 transition-colors">

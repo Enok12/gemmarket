@@ -77,6 +77,7 @@ export default async function ListingDetailPage({ params }) {
 
   const specs = [
     { icon: <Scale size={15} />,    label: 'Carat weight', value: `${listing.carat} ct` },
+    { icon: <Award size={15} />,    label: 'Stone type',   value: listing.stoneType === 'ROUGH' ? 'Rough Stone' : 'Cut & Polished' },
     ...(listing.clarity  ? [{ icon: <Layers size={15} />,   label: 'Clarity',  value: listing.clarity }]  : []),
     ...(listing.cut      ? [{ icon: <Scissors size={15} />, label: 'Cut',      value: listing.cut }]      : []),
     ...(listing.origin   ? [{ icon: <Globe size={15} />,    label: 'Origin',   value: listing.origin }]   : []),

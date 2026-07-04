@@ -51,9 +51,24 @@ export function getGemColor(gemType) {
   return gemTypeColors[gemType] || gemTypeColors['Other']
 }
 
+const GEM_TYPE_LIST = [
+  'Diamond', 'Ruby', 'Sapphire', 'Emerald', 'Alexandrite', 'Chrysoberyl',
+  'Spinel', 'Garnet', 'Tourmaline', 'Topaz', 'Zircon', 'Quartz',
+  'Aquamarine', 'Morganite', 'Heliodor', 'Moonstone', 'Sunstone', 'Labradorite',
+  'Opal', 'Jade', 'Pearl', 'Coral', 'Amber', 'Peridot',
+  'Tanzanite', 'Kunzite', 'Iolite', 'Andalusite', 'Kyanite', 'Apatite',
+  'Fluorite', 'Sphene', 'Diopside', 'Danburite', 'Benitoite', 'Larimar',
+  'Sugilite', 'Rhodonite', 'Rhodochrosite', 'Prehnite', 'Serpentine', 'Zoisite',
+  'Scapolite', 'Vesuvianite', 'Hemimorphite', 'Smithsonite', 'Charoite', 'Bloodstone',
+  'Amazonite', 'Turquoise', 'Malachite', 'Azurite', "Tiger's Eye", 'Pietersite',
+  'Obsidian', 'Agate', 'Onyx', 'Carnelian', 'Jasper', 'Chalcedony',
+  'Amethyst',
+]
+
+// Alphabetical, with 'Other' kept last as the catch-all option
 export const GEM_TYPES = [
-  'Ruby', 'Sapphire', 'Emerald', 'Zircon', 'Spinel', 'Topaz',
-  'Moonstone', 'Amethyst', 'Alexandrite', 'Garnet', 'Tourmaline', 'Other',
+  ...GEM_TYPE_LIST.sort((a, b) => a.localeCompare(b)),
+  'Other',
 ]
 
 

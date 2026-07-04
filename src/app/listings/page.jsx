@@ -50,19 +50,25 @@ function ListingsContent() {
     router.push(`/listings?${params.toString()}`)
   }
 
-  const activeGemType = searchParams.get('gemType')
-  const activeSearch  = searchParams.get('search')
+  const activeGemType   = searchParams.get('gemType')
+  const activeStoneType = searchParams.get('stoneType')
+  const activeSearch    = searchParams.get('search')
+  const stoneTypeLabel  = activeStoneType === 'ROUGH' ? 'Rough'
+                        : activeStoneType === 'CUT_AND_POLISHED' ? 'Cut & Polished'
+                        : null
   const hasFilters    =
-    searchParams.get('gemType') || searchParams.get('location') ||
-    searchParams.get('certified') || searchParams.get('minPrice') ||
-    searchParams.get('maxPrice')
+    searchParams.get('gemType') || searchParams.get('stoneType') ||
+    searchParams.get('location') || searchParams.get('certified') ||
+    searchParams.get('minPrice') || searchParams.get('maxPrice')
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900 mb-1">
-          {activeGemType ? `${activeGemType} Listings` : 'Browse Here'}
+          {activeGemType
+            ? `${stoneTypeLabel ? `${stoneTypeLabel} ` : ''}${activeGemType} Listings`
+            : 'Browse Here'}
         </h1>
         <p className="text-sm text-gray-500">
           {loading ? 'Loading…' : `${pagination?.total ?? 0} listings found`}

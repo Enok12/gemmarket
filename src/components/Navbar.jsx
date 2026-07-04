@@ -50,7 +50,7 @@ export default function Navbar() {
 
             {/* Buy button */}
             <Link
-              href="/listings"
+              href="/gems"
               className="flex items-center gap-2 px-4 py-2 border border-gem-600 text-gem-600 text-sm font-medium rounded-lg hover:bg-gem-50 transition-colors"
             >
               <ShoppingBag size={15} />
@@ -149,7 +149,7 @@ export default function Navbar() {
           {/* Buy and Sell prominent buttons */}
           <div className="flex gap-2 pb-2 border-b border-gray-100">
             <Link
-              href="/listings"
+              href="/gems"
               onClick={() => setMobileOpen(false)}
               className="flex-1 flex items-center justify-center gap-2 py-2.5 border border-gem-600 text-gem-600 text-sm font-medium rounded-lg hover:bg-gem-50 transition-colors"
             >

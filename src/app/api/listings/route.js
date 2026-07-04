@@ -10,6 +10,7 @@ const createSchema = z.object({
   title:          z.string().min(5),
   price:          z.number().positive().nullable().optional(),
   gemType:        z.string().min(1),
+  stoneType:      z.enum(['ROUGH', 'CUT_AND_POLISHED']).default('CUT_AND_POLISHED'),
   carat:          z.number().positive(),
   color:          z.string().min(1),
   clarity:        z.string().optional(),
@@ -37,6 +38,7 @@ export async function GET(req) {
     const { searchParams } = new URL(req.url)
     const search    = searchParams.get('search') || ''
     const gemType   = searchParams.get('gemType') || ''
+    const stoneType = searchParams.get('stoneType') || ''
     const location  = searchParams.get('location') || ''
     const certified = searchParams.get('certified')
     const minPrice  = searchParams.get('minPrice')
@@ -56,6 +58,7 @@ export async function GET(req) {
         ],
       }),
       ...(gemType   && { gemType }),
+      ...(['ROUGH', 'CUT_AND_POLISHED'].includes(stoneType) && { stoneType }),
       ...(location  && { location }),
       ...(certified === 'true' && { isCertified: true }),
       ...((minPrice || maxPrice) && {

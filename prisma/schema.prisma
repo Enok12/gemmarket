@@ -24,6 +24,11 @@ enum ListingStatus {
   REJECTED
 }
 
+enum StoneType {
+  ROUGH
+  CUT_AND_POLISHED
+}
+
 model User {
   id         String    @id @default(cuid())
   name       String
@@ -46,6 +51,7 @@ model Listing {
   title              String
   price              Float?
   gemType            String
+  stoneType          StoneType     @default(CUT_AND_POLISHED)
   carat              Float
   color              String
   clarity            String?
