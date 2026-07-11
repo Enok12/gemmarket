@@ -21,7 +21,10 @@ const schema = z.object({
                     z.number({ invalid_type_error: 'Enter a valid price' }).positive('Price must be positive').optional()
                   ),
   gemType:        z.string().min(1, 'Select a gem type'),
-  stoneType:      z.enum(['ROUGH', 'CUT_AND_POLISHED']).default('CUT_AND_POLISHED'),
+  stoneType:      z.enum(['ROUGH', 'CUT_AND_POLISHED'], {
+                    required_error: 'Please select a stone type',
+                    invalid_type_error: 'Please select a stone type',
+                  }),
   carat:          z.number({ invalid_type_error: 'Enter a valid carat weight' }).positive('Must be positive'),
   color:          z.string().min(1, 'Color is required'),
   clarity:        z.string().optional(),
@@ -50,7 +53,7 @@ export default function CreateListingPage() {
 
   const { register, handleSubmit, control, watch, setValue, formState: { errors } } = useForm({
   resolver: zodResolver(schema),
-  defaultValues: { isCertified: false, availability: 'Available', priceOnInquiry: false, stoneType: 'CUT_AND_POLISHED' },
+  defaultValues: { isCertified: false, availability: 'Available', priceOnInquiry: false },
 })
 
   useEffect(() => {
@@ -139,7 +142,13 @@ async function fetchAndFillProfile() {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form
+        onSubmit={handleSubmit(onSubmit, (formErrors) => {
+          const first = Object.values(formErrors)[0]
+          toast.error(first?.message || 'Please fix the highlighted fields')
+        })}
+        className="space-y-6"
+      >
 
         {/* ── Photos ── */}
         <section className="bg-white border border-gray-200 rounded-xl p-6">

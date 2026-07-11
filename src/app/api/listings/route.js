@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { getUserFromRequest } from '@/lib/auth'
 import { apiSuccess, apiError } from '@/lib/utils'
 import { createListingLimiter, checkRateLimit } from '@/lib/ratelimit'
+import { generateItemCode } from '@/lib/itemCode'
 
 
 const createSchema = z.object({
@@ -114,25 +115,38 @@ export async function POST(req) {
 
     const { images, videos, ...listingData } = parsed.data
 
-    const listing = await prisma.listing.create({
-      data: {
-        ...listingData,
-        userId: currentUser.userId,
-        ...(images?.length && {
-          images: { create: images.map((img) => ({ imageUrl: img.imageUrl, publicId: img.publicId })) },
-        }),
-        ...(videos?.length && {
-          videos: { create: videos.map((vid) => ({ videoUrl: vid.videoUrl, publicId: vid.publicId })) },
-        }),
-        tracking: { create: {} },
-      },
-      include: {
-        images:   true,
-        videos:   true,
-        tracking: true,
-        user:     { select: { id: true, name: true, email: true } },
-      },
-    })
+    // Assign the next GGMP item code. Retry if two listings race for the
+    // same code (unique constraint violation, Prisma error P2002).
+    let listing
+    for (let attempt = 0; ; attempt++) {
+      try {
+        listing = await prisma.listing.create({
+          data: {
+            ...listingData,
+            itemCode: await generateItemCode(),
+            userId: currentUser.userId,
+            ...(images?.length && {
+              images: { create: images.map((img) => ({ imageUrl: img.imageUrl, publicId: img.publicId })) },
+            }),
+            ...(videos?.length && {
+              videos: { create: videos.map((vid) => ({ videoUrl: vid.videoUrl, publicId: vid.publicId })) },
+            }),
+            tracking: { create: {} },
+          },
+          include: {
+            images:   true,
+            videos:   true,
+            tracking: true,
+            user:     { select: { id: true, name: true, email: true } },
+          },
+        })
+        break
+      } catch (err) {
+        const isCodeCollision =
+          err.code === 'P2002' && err.meta?.target?.includes?.('itemCode')
+        if (!isCodeCollision || attempt >= 4) throw err
+      }
+    }
 
     return apiSuccess(listing, 201)
   } catch (err) {

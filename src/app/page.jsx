@@ -32,6 +32,12 @@ const CATEGORY_IMAGES = {
   Alexandrite: 'https://res.cloudinary.com/dapowzg6d/image/upload/v1779353585/Alaxandrite_gltgmh.jpg',
   Garnet:      'https://res.cloudinary.com/dapowzg6d/image/upload/v1779353586/Garnet_xyqz0i.jpg',
   Tourmaline:  'https://res.cloudinary.com/dapowzg6d/image/upload/v1779353587/Tourmaline_bcyyiy.webp',
+  Aquamarine:  null,
+}
+
+// Fallback gradient for categories that don't have a photo yet
+const CATEGORY_GRADIENTS = {
+  Aquamarine: 'from-cyan-300 to-blue-500',
 }
 
 async function getFeaturedListings() {
@@ -83,6 +89,7 @@ export default async function HomePage() {
   const CATEGORIES = Object.keys(CATEGORY_IMAGES).map((name) => ({
     name,
     image: CATEGORY_IMAGES[name],
+    gradient: CATEGORY_GRADIENTS[name],
     count: categoryCounts[name] || 0,
   }))
 
@@ -225,16 +232,20 @@ export default async function HomePage() {
           {CATEGORIES.map((cat) => (
             <Link
               key={cat.name}
-              href={`/listings?gemType=${cat.name}`}
+              href={`/gems/${encodeURIComponent(cat.name)}`}
               className="group relative overflow-hidden rounded-2xl aspect-square shadow-sm hover:shadow-md transition-all duration-200"
             >
-              {/* Image */}
-              <Image
-                src={cat.image}
-                alt={cat.name}
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-300"
-              />
+              {/* Image (or gradient fallback if no photo yet) */}
+              {cat.image ? (
+                <Image
+                  src={cat.image}
+                  alt={cat.name}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              ) : (
+                <div className={`absolute inset-0 bg-gradient-to-br ${cat.gradient || 'from-gem-300 to-gem-500'} group-hover:scale-105 transition-transform duration-300`} />
+              )}
 
               {/* Dark overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />

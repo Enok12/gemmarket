@@ -185,6 +185,12 @@ export default async function ListingDetailPage({ params }) {
               {listing.color} · {listing.carat} carats
               {listing.origin ? ` · from ${listing.origin}` : ''}
             </p>
+            {listing.itemCode && (
+              <p className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 bg-gray-100 px-2.5 py-1 rounded-md">
+                <span className="text-gray-400">Item Code</span>
+                <span className="font-semibold tracking-wide text-gray-800">{listing.itemCode}</span>
+              </p>
+            )}
           </div>
 
           {/* Price */}
