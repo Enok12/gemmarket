@@ -32,13 +32,11 @@ const CATEGORY_IMAGES = {
   Alexandrite: 'https://res.cloudinary.com/dapowzg6d/image/upload/v1779353585/Alaxandrite_gltgmh.jpg',
   Garnet:      'https://res.cloudinary.com/dapowzg6d/image/upload/v1779353586/Garnet_xyqz0i.jpg',
   Tourmaline:  'https://res.cloudinary.com/dapowzg6d/image/upload/v1779353587/Tourmaline_bcyyiy.webp',
-  Aquamarine:  null,
+  Aquamarine:  'https://res.cloudinary.com/dapowzg6d/image/upload/v1783789666/images_wjczis.jpg',
 }
 
 // Fallback gradient for categories that don't have a photo yet
-const CATEGORY_GRADIENTS = {
-  Aquamarine: 'from-cyan-300 to-blue-500',
-}
+const CATEGORY_GRADIENTS = {}
 
 async function getFeaturedListings() {
   try {

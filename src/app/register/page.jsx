@@ -72,6 +72,10 @@ export default function RegisterPage() {
           </div>
           <h1 className="text-2xl font-bold text-gray-900">Create your account</h1>
           <p className="text-gray-500 mt-1 text-sm">Join GGMP and start buying and selling today</p>
+          <p className="text-sm text-gray-500 mt-3">
+            Already have an account?{' '}
+            <Link href="/login" className="text-gem-600 hover:text-gem-800 font-medium">Sign in</Link>
+          </p>
         </div>
 
         <div className="bg-white rounded-2xl border border-gray-200 p-8">
