@@ -5,6 +5,7 @@ import Navbar from '@/components/Navbar'
 import { Toaster } from 'react-hot-toast'
 import BottomNav from '@/components/BottomNav'
 import PageTransition from '@/components/PageTransition'
+import DeepLinkHandler from '@/components/DeepLinkHandler'
 
 
 const inter = Inter({ subsets: ['latin'] })
@@ -27,6 +28,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={`${inter.className} bg-gray-50 text-gray-900 antialiased`}>
         <AuthProvider>
+          <DeepLinkHandler />
           <Navbar />
             <main className="min-h-screen">
             <PageTransition>

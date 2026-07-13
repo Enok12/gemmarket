@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.ggmp.marketplace",
+      "sha256_cert_fingerprints": [
+        "1D:6C:82:A6:50:01:F0:25:37:C2:57:F6:55:F7:28:E1:C7:95:48:23:6E:9D:C3:1A:EB:5B:49:23:B5:0B:A3:42"
+      ]
+    }
+  }
+]
