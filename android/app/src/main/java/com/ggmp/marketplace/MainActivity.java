@@ -22,7 +22,7 @@ import com.getcapacitor.BridgeActivity;
 
 public class MainActivity extends BridgeActivity {
 
-    private static final String APP_URL    = "https://gemmarket.vercel.app";
+    private static final String APP_URL    = "https://ggmp.app";
     private static final String OFFLINE_URL = "file:///android_asset/public/offline.html";
     private boolean isFirstLoad  = true;
     private boolean doubleBackToExitPressedOnce = false;

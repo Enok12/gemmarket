@@ -19,13 +19,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <!-- Android App Links: open gemmarket.vercel.app URLs in the app.
-                 autoVerify checks /.well-known/assetlinks.json on the domain,
-                 which is what suppresses the "open with" chooser dialog. -->
+            <!-- Android App Links: open GGMP URLs in the app. autoVerify checks
+                 /.well-known/assetlinks.json on each domain, which is what
+                 suppresses the "open with" chooser dialog. Both hosts are listed
+                 so existing gemmarket.vercel.app links keep working alongside ggmp.app. -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="ggmp.app" />
                 <data android:scheme="https" android:host="gemmarket.vercel.app" />
             </intent-filter>
         </activity>
