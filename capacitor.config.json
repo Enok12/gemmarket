@@ -8,14 +8,6 @@
     "androidScheme": "https"
   },
   "plugins": {
-    "SplashScreen": {
-      "launchShowDuration": 3000,
-      "backgroundColor": "#000000",
-      "showSpinner": false,
-      "splashFullScreen": true,
-      "splashImmersive": true,
-      "androidScaleType": "CENTER_CROP"
-    },
     "StatusBar": {
       "overlaysWebView": false,
       "style": "DARK",

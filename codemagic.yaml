@@ -19,7 +19,8 @@ workflows:
         script: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleRelease \
+          # bundleRelease -> .aab for the Play Store; assembleRelease -> .apk for sideload testing
+          ./gradlew bundleRelease assembleRelease \
             -Pandroid.injected.signing.store.file=$CM_BUILD_DIR/android/app/ggmp-release.keystore \
             -Pandroid.injected.signing.store.password=$CM_KEYSTORE_PASSWORD \
             -Pandroid.injected.signing.key.alias=$CM_KEY_ALIAS \
