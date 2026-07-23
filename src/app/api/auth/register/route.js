@@ -36,7 +36,25 @@ export async function POST(req) {
     const { name, email, password, phone, primaryContact } = parsed.data
 
     const existing = await prisma.user.findUnique({ where: { email } })
-    if (existing) return apiError('Email already registered', 409)
+    if (existing) {
+      // A fully-registered account already owns this email.
+      if (existing.isVerified) return apiError('Email already registered', 409)
+
+      // The account exists but was never verified — likely the same person
+      // coming back after losing the verification screen. Refresh their details
+      // and send a fresh code instead of blocking them.
+      const rehashed = await bcrypt.hash(password, 12)
+      const updated  = await prisma.user.update({
+        where: { id: existing.id },
+        data:  { name, password: rehashed, phone: phone || null, primaryContact: primaryContact || 'WHATSAPP' },
+      })
+      const newCode = generateOtp()
+      await prisma.otp.create({
+        data: { userId: updated.id, code: newCode, expiresAt: new Date(Date.now() + 10 * 60 * 1000) },
+      })
+      await sendOtpEmail(email, name, newCode)
+      return apiSuccess({ userId: updated.id, email: updated.email }, 200)
+    }
 
     const hashed = await bcrypt.hash(password, 12)
 

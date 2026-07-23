@@ -38,6 +38,10 @@ export default function LoginPage() {
         login(result.data.user, result.data.token)
         toast.success(`Welcome back, ${result.data.user.name}!`)
         router.push('/')
+      } else if (result.needsVerification && result.userId) {
+        // Account exists but email isn't verified — send them to enter the code.
+        toast(result.error || 'Please verify your email.')
+        router.push(`/verify?userId=${result.userId}`)
       } else {
         toast.error(result.error || 'Login failed')
       }

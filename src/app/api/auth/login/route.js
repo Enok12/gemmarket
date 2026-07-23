@@ -1,10 +1,13 @@
 export const dynamic = 'force-dynamic'
+import { NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { signToken } from '@/lib/auth'
 import { apiSuccess, apiError } from '@/lib/utils'
 import { loginLimiter, checkRateLimit } from '@/lib/ratelimit'
+import { generateOtp } from '@/lib/otp'
+import { sendOtpEmail } from '@/lib/email'
 
 
 const schema = z.object({
@@ -34,9 +37,28 @@ export async function POST(req) {
     const match = await bcrypt.compare(password, user.password)
     if (!match) return apiError('Invalid email or password', 401)
 
-      // Block unverified users
+      // Unverified user with correct credentials: re-issue a fresh code and
+      // route them back to the verification screen (they may have lost the
+      // original /verify link by closing the app before entering the code).
       if (!user.isVerified) {
-        return apiError('Please verify your email before logging in. Check your inbox for the verification code.', 403)
+        const code = generateOtp()
+        await prisma.otp.create({
+          data: { userId: user.id, code, expiresAt: new Date(Date.now() + 10 * 60 * 1000) },
+        })
+        try {
+          await sendOtpEmail(user.email, user.name, code)
+        } catch (e) {
+          console.error('Resend OTP email failed on login:', e)
+        }
+        return NextResponse.json(
+          {
+            success: false,
+            needsVerification: true,
+            userId: user.id,
+            error: "Please verify your email. We've sent a new code to your inbox.",
+          },
+          { status: 403 }
+        )
       }
 
     const token = signToken({ userId: user.id, email: user.email, role: user.role })
