@@ -29,6 +29,7 @@ public class MainActivity extends BridgeActivity {
     private String lastUrl = APP_URL;
     private View splashOverlay;
     private boolean splashDismissed = false;
+    private long splashMinimumUntil = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,6 +44,15 @@ public class MainActivity extends BridgeActivity {
         animateDot(splashOverlay.findViewById(R.id.dot1), 0);
         animateDot(splashOverlay.findViewById(R.id.dot2), 160);
         animateDot(splashOverlay.findViewById(R.id.dot3), 320);
+
+        // First-ever launch: hold the splash for at least 3s so users see the
+        // branding. Subsequent launches dismiss as soon as the page is ready.
+        android.content.SharedPreferences prefs = getSharedPreferences("ggmp_prefs", MODE_PRIVATE);
+        if (!prefs.getBoolean("first_launch_done", false)) {
+            splashMinimumUntil = System.currentTimeMillis() + 3000;
+            prefs.edit().putBoolean("first_launch_done", true).apply();
+        }
+
         // Safety net: never let the splash stick if the page never reports finished.
         new Handler().postDelayed(this::dismissSplash, 15000);
 
@@ -174,6 +184,15 @@ public class MainActivity extends BridgeActivity {
     // Fade out and remove the splash overlay (idempotent).
     private void dismissSplash() {
         if (splashDismissed || splashOverlay == null) return;
+
+        // On first launch, keep the splash up until the 3s minimum has elapsed
+        // even if the page loaded sooner — re-check after the remaining time.
+        long remaining = splashMinimumUntil - System.currentTimeMillis();
+        if (remaining > 0) {
+            splashOverlay.postDelayed(this::dismissSplash, remaining);
+            return;
+        }
+
         splashDismissed = true;
         splashOverlay.animate().alpha(0f).setDuration(400).withEndAction(() -> {
             ViewGroup parent = (ViewGroup) splashOverlay.getParent();
