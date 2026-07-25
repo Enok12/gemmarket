@@ -13,6 +13,7 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.webkit.WebBackForwardList;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceError;
 import android.content.Context;
@@ -101,17 +102,32 @@ public class MainActivity extends BridgeActivity {
             public void handleOnBackPressed() {
                 WebView webView = getBridge().getWebView();
 
-                // If WebView can go back navigate back in history
+                // Navigate back in history, but skip over any offline pages so
+                // pressing back never returns the user to the "No Connection" screen.
                 if (webView.canGoBack()) {
-                    webView.goBack();
-                    return;
+                    WebBackForwardList list = webView.copyBackForwardList();
+                    int current = list.getCurrentIndex();
+                    int target  = current - 1;
+                    while (target >= 0) {
+                        String u = list.getItemAtIndex(target).getUrl();
+                        if (u != null && u.contains("offline.html")) {
+                            target--;               // skip this offline entry
+                        } else {
+                            break;                  // found a real page
+                        }
+                    }
+                    if (target >= 0) {
+                        webView.goBackOrForward(target - current);
+                        return;
+                    }
+                    // Only offline pages behind us — fall through to the exit flow.
                 }
 
-                // If on offline page go to app
+                // If currently on the offline page and back online, load the app
                 String currentUrl = webView.getUrl();
                 if (currentUrl != null && currentUrl.contains("offline.html")) {
                     if (isConnected()) {
-                        webView.loadUrl(APP_URL);
+                        webView.loadUrl(lastUrl);
                     }
                     return;
                 }
