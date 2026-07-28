@@ -114,12 +114,6 @@ export default function LoginPage() {
               <Link href="/register" className="text-gem-600 hover:text-gem-800 font-medium">Sign up free</Link>
             </p>
           </div>
-
-          <div className="mt-4 p-3 bg-gray-50 rounded-lg text-xs text-gray-500">
-            <strong>Demo accounts:</strong><br />
-            Admin: admin@gemmarket.lk / admin123<br />
-            Seller: seller@gemmarket.lk / seller123
-          </div>
         </div>
       </div>
     </div>
