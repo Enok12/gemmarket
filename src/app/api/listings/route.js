@@ -16,13 +16,16 @@ const createSchema = z.object({
   color:          z.string().min(1),
   clarity:        z.string().optional(),
   cut:            z.string().optional(),
+  treatment:      z.string().optional(),
   origin:         z.string().optional(),
   description:    z.string().min(20),
   whatsappNumber: z.string().min(7),
   telegram: z.string().nullable().optional().transform(v => v || null),
   line:     z.string().nullable().optional().transform(v => v || null),
   location:       z.string().optional(),
-  isCertified:    z.boolean().default(false),
+  country:        z.string().min(1),
+  city:           z.string().min(1),
+  certification:  z.string().default('Not available'),
   certificationImage: z.string().optional(),
   availability:   z.enum(['Available', 'Sold']).default('Available'),
   images: z.array(
@@ -40,7 +43,7 @@ export async function GET(req) {
     const search    = searchParams.get('search') || ''
     const gemType   = searchParams.get('gemType') || ''
     const stoneType = searchParams.get('stoneType') || ''
-    const location  = searchParams.get('location') || ''
+    const country   = searchParams.get('country') || ''
     const certified = searchParams.get('certified')
     const minPrice  = searchParams.get('minPrice')
     const maxPrice  = searchParams.get('maxPrice')
@@ -60,8 +63,8 @@ export async function GET(req) {
       }),
       ...(gemType   && { gemType }),
       ...(['ROUGH', 'CUT_AND_POLISHED'].includes(stoneType) && { stoneType }),
-      ...(location  && { location }),
-      ...(certified === 'true' && { isCertified: true }),
+      ...(country   && { country }),
+      ...(certified === 'true' && { certification: 'Available' }),
       ...((minPrice || maxPrice) && {
         price: {
           ...(minPrice ? { gte: parseFloat(minPrice) } : {}),

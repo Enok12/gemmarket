@@ -57,13 +57,17 @@ model Listing {
   color              String
   clarity            String?
   cut                String?
+  treatment          String?
   origin             String?
   description        String        @db.Text
   whatsappNumber     String
   telegram           String?
   line               String?
   location           String?
+  country            String?
+  city               String?
   isCertified        Boolean       @default(false)
+  certification      String        @default("Not available")
   availability       String        @default("Available")
   certificationImage String?
   status             ListingStatus @default(PENDING)

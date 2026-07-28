@@ -58,7 +58,7 @@ function ListingsContent() {
                         : null
   const hasFilters    =
     searchParams.get('gemType') || searchParams.get('stoneType') ||
-    searchParams.get('location') || searchParams.get('certified') ||
+    searchParams.get('country') || searchParams.get('certified') ||
     searchParams.get('minPrice') || searchParams.get('maxPrice')
 
   return (

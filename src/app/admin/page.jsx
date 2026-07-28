@@ -267,9 +267,12 @@ const { user, token, isAdmin, isLoading } = useAuth()
                         <span className="font-semibold text-gem-700">{formatPrice(listing.price)}</span>
                         <span>{listing.gemType}</span>
                         <span>{listing.carat} ct</span>
-                        <span>{listing.location}</span>
-                        {listing.isCertified && (
+                        <span>{[listing.city, listing.country].filter(Boolean).join(', ') || listing.location}</span>
+                        {listing.certification === 'Available' && (
                           <span className="text-green-600 font-medium">✓ Certified</span>
+                        )}
+                        {listing.certification === 'On request' && (
+                          <span className="text-amber-600 font-medium">Cert. on request</span>
                         )}
                       </div>
                       <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-1.5 text-xs text-gray-400">

@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useCallback } from 'react'
-import { GEM_TYPES, LOCATIONS } from '@/lib/utils'
+import { GEM_TYPES, COUNTRIES } from '@/lib/utils'
 import { SlidersHorizontal, X } from 'lucide-react'
 
 export default function FilterBar() {
@@ -21,7 +21,7 @@ export default function FilterBar() {
   const hasFilters =
     searchParams.get('gemType')   ||
     searchParams.get('stoneType') ||
-    searchParams.get('location')  ||
+    searchParams.get('country')   ||
     searchParams.get('certified') ||
     searchParams.get('minPrice')  ||
     searchParams.get('maxPrice')
@@ -81,16 +81,16 @@ export default function FilterBar() {
           </div>
         </div>
 
-        {/* Location */}
+        {/* Country */}
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-2">Location</label>
+          <label className="block text-xs font-medium text-gray-500 mb-2">Country</label>
           <select
-            value={searchParams.get('location') || ''}
-            onChange={(e) => updateFilter('location', e.target.value)}
+            value={searchParams.get('country') || ''}
+            onChange={(e) => updateFilter('country', e.target.value)}
             className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-gem-300"
           >
-            <option value="">All locations</option>
-            {LOCATIONS.map((l) => <option key={l} value={l}>{l}</option>)}
+            <option value="">All countries</option>
+            {COUNTRIES.map((c) => <option key={c} value={c}>{c}</option>)}
           </select>
         </div>
 

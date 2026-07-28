@@ -9,7 +9,7 @@ import Link from 'next/link'
 import { useAuth } from '@/hooks/useAuth'
 import toast from 'react-hot-toast'
 import ImageUpload from '@/components/ImageUpload'
-import { GEM_TYPES, LOCATIONS, CLARITY_OPTIONS } from '@/lib/utils'
+import { GEM_TYPES, COUNTRIES, CLARITY_OPTIONS, TREATMENT_OPTIONS, CERTIFICATION_OPTIONS } from '@/lib/utils'
 import { Loader2, ArrowLeft, AlertCircle } from 'lucide-react'
 import VideoUpload from '@/components/VideoUpload'
 
@@ -27,13 +27,16 @@ const schema = z.object({
   color:          z.string().min(1),
   clarity:        z.string().optional(),
   cut:            z.string().optional(),
+  treatment:      z.string().optional(),
   origin:         z.string().optional(),
   description:    z.string().min(20, 'Description must be at least 20 characters'),
   whatsappNumber: z.string().min(7),
   telegram: z.string().nullable().optional().transform(v => v || null),
   line:     z.string().nullable().optional().transform(v => v || null),
   location:       z.string().optional(),
-  isCertified:    z.boolean().default(false),
+  country:        z.string().min(1, 'Select a country'),
+  city:           z.string().min(1, 'City is required'),
+  certification:  z.string().default('Not available'),
   availability:   z.enum(['Available', 'Sold']).default('Available'),
 
 }).refine((d) => d.priceOnInquiry || (typeof d.price === 'number' && d.price > 0), {
@@ -95,15 +98,18 @@ export default function EditListingPage() {
         stoneType:      l.stoneType || 'CUT_AND_POLISHED',
         carat:          l.carat,
         color:          l.color,
-        clarity:        l.clarity  || '',
-        cut:            l.cut      || '',
-        origin:         l.origin   || '',
+        clarity:        l.clarity   || '',
+        cut:            l.cut       || '',
+        treatment:      l.treatment || 'Natural',
+        origin:         l.origin    || '',
         description:    l.description,
         whatsappNumber: l.whatsappNumber,
         telegram:       l.telegram || '',
         line:           l.line     || '',
         location:       l.location || '',
-        isCertified:    l.isCertified,
+        country:        l.country  || 'Sri Lanka',
+        city:           l.city     || l.location || '',
+        certification:  l.certification || 'Not available',
         availability:   l.availability || 'Available',
 
       })
@@ -318,6 +324,12 @@ export default function EditListingPage() {
               <input {...register('cut')} className="input-field" placeholder="Optional" />
             </div>
             <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Treatment</label>
+              <select {...register('treatment')} className="input-field">
+                {TREATMENT_OPTIONS.map((t) => <option key={t} value={t}>{t}</option>)}
+              </select>
+            </div>
+            <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Origin</label>
               <input {...register('origin')} className="input-field" />
             </div>
@@ -332,18 +344,11 @@ export default function EditListingPage() {
             </select>
           </div>
 
-          <div className="flex items-start gap-3 pt-3 border-t border-gray-100">
-            <Controller
-              name="isCertified"
-              control={control}
-              render={({ field }) => (
-                <input type="checkbox" id="isCertified" checked={field.value} onChange={field.onChange}
-                  className="w-4 h-4 mt-0.5 text-gem-600 rounded" />
-              )}
-            />
-            <label htmlFor="isCertified" className="text-sm font-medium text-gray-700 cursor-pointer">
-              This gem has an official certification
-            </label>
+          <div className="pt-3 border-t border-gray-100">
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Certification</label>
+            <select {...register('certification')} className="input-field">
+              {CERTIFICATION_OPTIONS.map((c) => <option key={c} value={c}>{c}</option>)}
+            </select>
           </div>
         </section>
 
@@ -357,11 +362,21 @@ export default function EditListingPage() {
               {errors.whatsappNumber && <p className="text-xs text-red-500 mt-1">{errors.whatsappNumber.message}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Location</label>
-              <select {...register('location')} className="input-field">
-                <option value="">Select location… (optional)</option>
-                {LOCATIONS.map((l) => <option key={l} value={l}>{l}</option>)}
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                Country <span className="text-red-500">*</span>
+              </label>
+              <select {...register('country')} className="input-field">
+                <option value="">Select country…</option>
+                {COUNTRIES.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
+              {errors.country && <p className="text-xs text-red-500 mt-1">{errors.country.message}</p>}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                City <span className="text-red-500">*</span>
+              </label>
+              <input {...register('city')} className="input-field" placeholder="e.g. Colombo" />
+              {errors.city && <p className="text-xs text-red-500 mt-1">{errors.city.message}</p>}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">

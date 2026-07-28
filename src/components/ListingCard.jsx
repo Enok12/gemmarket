@@ -74,7 +74,7 @@ export default function ListingCard({ listing, showStatus = false }) {
           <span className="flex items-center gap-1"><Scale size={11} /> {listing.carat} ct</span>
           <span>{listing.color}</span>
           <span>{listing.clarity}</span>
-          <span className="flex items-center gap-1"><MapPin size={11} /> {listing.location}</span>
+          <span className="flex items-center gap-1"><MapPin size={11} /> {[listing.city, listing.country].filter(Boolean).join(', ') || listing.location}</span>
         </div>
 
         <div className="flex items-center justify-between">
@@ -85,13 +85,17 @@ export default function ListingCard({ listing, showStatus = false }) {
               )
             : <span className="text-base font-bold text-gray-400 tracking-widest">••••••</span>
           }
-          {listing.isCertified ? (
+          {listing.certification === 'Available' ? (
             <span className="flex items-center gap-1 text-xs text-green-700 bg-green-50 px-2 py-0.5 rounded-full">
               <Shield size={11} /> Certified
             </span>
+          ) : listing.certification === 'On request' ? (
+            <span className="flex items-center gap-1 text-xs text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full">
+              <Shield size={11} /> Cert. on request
+            </span>
           ) : (
             <span className="flex items-center gap-1 text-xs text-gray-400">
-              <ShieldOff size={11} /> Uncertified
+              <ShieldOff size={11} /> No cert
             </span>
           )}
         </div>

@@ -11,7 +11,7 @@ import ContactGate from '@/components/ContactGate'
 import ShareButton from '@/components/ShareButton'
 import {
   MapPin, Scale, Shield, ShieldOff,
-  ArrowLeft, Award, Layers, Scissors, Globe, Calendar, CheckCircle, XCircle
+  ArrowLeft, Award, Layers, Scissors, Globe, Calendar, CheckCircle, XCircle, Flame
 } from 'lucide-react'
 import PriceDisplay from '@/components/PriceDisplay'
 
@@ -80,8 +80,12 @@ export default async function ListingDetailPage({ params }) {
     { icon: <Award size={15} />,    label: 'Stone type',   value: listing.stoneType === 'ROUGH' ? 'Rough Stone' : 'Cut & Polished' },
     ...(listing.clarity  ? [{ icon: <Layers size={15} />,   label: 'Clarity',  value: listing.clarity }]  : []),
     ...(listing.cut      ? [{ icon: <Scissors size={15} />, label: 'Cut',      value: listing.cut }]      : []),
+    ...(listing.treatment ? [{ icon: <Flame size={15} />,   label: 'Treatment', value: listing.treatment }] : []),
     ...(listing.origin   ? [{ icon: <Globe size={15} />,    label: 'Origin',   value: listing.origin }]   : []),
-    ...(listing.location ? [{ icon: <MapPin size={15} />,   label: 'Location', value: listing.location }] : []),
+    ...((listing.city || listing.country || listing.location)
+      ? [{ icon: <MapPin size={15} />, label: 'Location',
+           value: [listing.city, listing.country].filter(Boolean).join(', ') || listing.location }]
+      : []),
     {
       icon: <Calendar size={15} />,
       label: 'Listed',
@@ -167,13 +171,17 @@ export default async function ListingDetailPage({ params }) {
               <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${gemColor}`}>
                 {listing.gemType}
               </span>
-              {listing.isCertified ? (
+              {listing.certification === 'Available' ? (
                 <span className="flex items-center gap-1 text-xs text-green-700 bg-green-50 px-2.5 py-1 rounded-full font-medium">
-                  <Shield size={11} /> Certified
+                  <Shield size={11} /> Certificate available
+                </span>
+              ) : listing.certification === 'On request' ? (
+                <span className="flex items-center gap-1 text-xs text-amber-700 bg-amber-50 px-2.5 py-1 rounded-full font-medium">
+                  <Shield size={11} /> Certificate on request
                 </span>
               ) : (
                 <span className="flex items-center gap-1 text-xs text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">
-                  <ShieldOff size={11} /> Uncertified
+                  <ShieldOff size={11} /> No certificate
                 </span>
               )}
             </div>
@@ -228,13 +236,24 @@ export default async function ListingDetailPage({ params }) {
           </div>
 
           {/* Certification notice */}
-          {listing.isCertified && (
+          {listing.certification === 'Available' && (
             <div className="flex items-start gap-3 bg-green-50 border border-green-200 rounded-xl p-4">
               <Award size={18} className="text-green-600 mt-0.5 shrink-0" />
               <div>
-                <p className="text-sm font-medium text-green-800">Certified gemstone</p>
+                <p className="text-sm font-medium text-green-800">Certificate available</p>
                 <p className="text-xs text-green-600 mt-0.5">
-                  This seller has provided a certificate of authenticity for this gem.
+                  This seller has an official lab certificate of authenticity for this gem.
+                </p>
+              </div>
+            </div>
+          )}
+          {listing.certification === 'On request' && (
+            <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl p-4">
+              <Award size={18} className="text-amber-600 mt-0.5 shrink-0" />
+              <div>
+                <p className="text-sm font-medium text-amber-800">Certificate on request</p>
+                <p className="text-xs text-amber-600 mt-0.5">
+                  A lab certificate can be provided by the seller on request — contact them for details.
                 </p>
               </div>
             </div>

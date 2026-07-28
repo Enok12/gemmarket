@@ -8,7 +8,7 @@ import { z } from 'zod'
 import { useAuth } from '@/hooks/useAuth'
 import toast from 'react-hot-toast'
 import ImageUpload from '@/components/ImageUpload'
-import { GEM_TYPES, LOCATIONS, CLARITY_OPTIONS } from '@/lib/utils'
+import { GEM_TYPES, COUNTRIES, CLARITY_OPTIONS, TREATMENT_OPTIONS, CERTIFICATION_OPTIONS } from '@/lib/utils'
 import { Loader2, Info } from 'lucide-react'
 import VideoUpload from '@/components/VideoUpload'
 
@@ -29,14 +29,17 @@ const schema = z.object({
   color:          z.string().min(1, 'Color is required'),
   clarity:        z.string().optional(),
   cut:            z.string().optional(),
+  treatment:      z.string().optional(),
   origin:         z.string().optional(),
   description:    z.string().min(20, 'Description must be at least 20 characters'),
   whatsappNumber: z.string().min(7, 'Enter your WhatsApp number'),
   telegram: z.string().nullable().optional().transform(v => v || null),
   line:     z.string().nullable().optional().transform(v => v || null),
   location:       z.string().optional(),
+  country:        z.string().min(1, 'Select a country'),
+  city:           z.string().min(1, 'City is required'),
   availability:   z.enum(['Available', 'Sold']).default('Available'),
-  isCertified:    z.boolean().default(false),
+  certification:  z.string().default('Not available'),
 }).refine((d) => d.priceOnInquiry || (typeof d.price === 'number' && d.price > 0), {
   message: 'Enter a valid price or select Price on Inquiry',
   path: ['price'],
@@ -53,7 +56,7 @@ export default function CreateListingPage() {
 
   const { register, handleSubmit, control, watch, setValue, formState: { errors } } = useForm({
   resolver: zodResolver(schema),
-  defaultValues: { isCertified: false, availability: 'Available', priceOnInquiry: false },
+  defaultValues: { certification: 'Not available', availability: 'Available', priceOnInquiry: false, treatment: 'Natural', country: 'Sri Lanka' },
 })
 
   useEffect(() => {
@@ -328,6 +331,13 @@ async function fetchAndFillProfile() {
             </div>
 
             <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Treatment</label>
+              <select {...register('treatment')} className="input-field">
+                {TREATMENT_OPTIONS.map((t) => <option key={t} value={t}>{t}</option>)}
+              </select>
+            </div>
+
+            <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
                 Origin <span className="text-gray-400 font-normal">(optional)</span>
               </label>
@@ -352,29 +362,15 @@ async function fetchAndFillProfile() {
               {errors.availability && <p className="text-xs text-red-500 mt-1">{errors.availability.message}</p>}
             </div>
 
-          {/* Certified toggle */}
-          <div className="flex items-start gap-3 pt-3 border-t border-gray-100">
-            <Controller
-              name="isCertified"
-              control={control}
-              render={({ field }) => (
-                <input
-                  type="checkbox"
-                  id="isCertified"
-                  checked={field.value}
-                  onChange={field.onChange}
-                  className="w-4 h-4 mt-0.5 text-gem-600 rounded border-gray-300 focus:ring-gem-300"
-                />
-              )}
-            />
-            <div>
-              <label htmlFor="isCertified" className="text-sm font-medium text-gray-700 cursor-pointer">
-                This gem has an official certification
-              </label>
-              <p className="text-xs text-gray-400 mt-0.5">
-                GIA, GRS, AGL, Gübelin, SSEF, or other recognised lab
-              </p>
-            </div>
+          {/* Certification */}
+          <div className="pt-3 border-t border-gray-100">
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Certification</label>
+            <select {...register('certification')} className="input-field">
+              {CERTIFICATION_OPTIONS.map((c) => <option key={c} value={c}>{c}</option>)}
+            </select>
+            <p className="text-xs text-gray-400 mt-1">
+              Whether an official lab certificate (GIA, GRS, AGL, Gübelin, SSEF, etc.) is available
+            </p>
           </div>
         </section>
 
@@ -405,15 +401,29 @@ async function fetchAndFillProfile() {
               {errors.whatsappNumber && <p className="text-xs text-red-500 mt-1">{errors.whatsappNumber.message}</p>}
             </div>
 
-            {/* Location */}
+            {/* Country */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Your location <span className="text-gray-400 font-normal">(optional)</span>
+                Country <span className="text-red-500">*</span>
               </label>
-              <select {...register('location')} className="input-field">
-                <option value="">Select location… (optional)</option>
-                {LOCATIONS.map((l) => <option key={l} value={l}>{l}</option>)}
+              <select {...register('country')} className="input-field">
+                <option value="">Select country…</option>
+                {COUNTRIES.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
+              {errors.country && <p className="text-xs text-red-500 mt-1">{errors.country.message}</p>}
+            </div>
+
+            {/* City */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                City <span className="text-red-500">*</span>
+              </label>
+              <input
+                {...register('city')}
+                placeholder="e.g. Colombo"
+                className="input-field"
+              />
+              {errors.city && <p className="text-xs text-red-500 mt-1">{errors.city.message}</p>}
             </div>
 
             {/* Telegram */}
