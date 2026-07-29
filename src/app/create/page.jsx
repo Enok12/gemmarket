@@ -9,7 +9,7 @@ import { useAuth } from '@/hooks/useAuth'
 import toast from 'react-hot-toast'
 import ImageUpload from '@/components/ImageUpload'
 import { GEM_TYPES, COUNTRIES, CLARITY_OPTIONS, TREATMENT_OPTIONS, CERTIFICATION_OPTIONS, CUT_OPTIONS } from '@/lib/utils'
-import { Loader2, Info } from 'lucide-react'
+import { Loader2, Info, PlusCircle, Trash2 } from 'lucide-react'
 import VideoUpload from '@/components/VideoUpload'
 
 
@@ -67,11 +67,12 @@ export default function CreateListingPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [images, setImages]   = useState([])
-  const [video, setVideo]   = useState(null)   
+  const [video, setVideo]   = useState(null)
   const [loadingProfile, setLoadingProfile] = useState(false)
+  const [queue, setQueue]     = useState([])   // listings staged for bulk submit
 
 
-  const { register, handleSubmit, control, watch, setValue, formState: { errors } } = useForm({
+  const { register, handleSubmit, control, watch, setValue, getValues, reset, formState: { errors } } = useForm({
   resolver: zodResolver(schema),
   defaultValues: { certification: 'Not available', availability: 'Available', priceOnInquiry: false, treatment: 'Natural', country: 'Sri Lanka' },
 })
@@ -106,41 +107,102 @@ async function fetchAndFillProfile() {
   }
 }
 
-  async function onSubmit(data) {
-    if (images.length === 0) {
-      toast.error('Please upload at least one image')
-      return
+  // Build a POST-ready listing payload from the current form data + uploaded media.
+  function buildPayload(data, imgs, vid) {
+    return {
+      ...data,
+      cut:      data.cutType === 'Other' ? data.cutOther.trim() : data.cutType,
+      price:    data.priceOnInquiry ? null : data.price,
+      telegram: data.telegram || null,
+      line:     data.line     || null,
+      images:   imgs.map((img) => ({ imageUrl: img.url, publicId: img.publicId })),
+      videos:   vid ? [{ videoUrl: vid.url, publicId: vid.publicId }] : [],
     }
+  }
+
+  // Blank the gem-specific fields but keep the seller's contacts + location.
+  function resetForNext() {
+    const cur = getValues()
+    reset({
+      certification: 'Not available',
+      availability:  'Available',
+      priceOnInquiry: false,
+      treatment:     'Natural',
+      // carried over
+      whatsappNumber: cur.whatsappNumber,
+      telegram:       cur.telegram,
+      line:           cur.line,
+      primaryContact: cur.primaryContact,
+      country:        cur.country,
+      city:           cur.city,
+    })
+    setImages([])
+    setVideo(null)
+  }
+
+  // "Add another" — validate current form, stage it, reset for the next.
+  const handleAddAnother = handleSubmit((data) => {
+    if (images.length === 0) { toast.error('Please upload at least one image'); return }
+    setQueue((q) => [...q, buildPayload(data, images, video)])
+    resetForNext()
+    toast.success('Added to batch — fill in the next gem')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, (formErrors) => {
+    const first = Object.values(formErrors)[0]
+    toast.error(first?.message || 'Please fix the highlighted fields')
+  })
+
+  // POST a list of listings sequentially; keep any that fail in the queue.
+  async function submitAll(items) {
     setLoading(true)
-    try {
-      const res = await fetch('/api/listings', {
-        method:  'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization:  `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          ...data,
-          cut:      data.cutType === 'Other' ? data.cutOther.trim() : data.cutType,
-          price:    data.priceOnInquiry ? null : data.price,
-          telegram: data.telegram || null,
-          line:     data.line     || null,
-          images: images.map((img) => ({ imageUrl: img.url, publicId: img.publicId })),
-          videos: video ? [{ videoUrl: video.url, publicId: video.publicId }] : [],
-        }),
-      })
-      const result = await res.json()
-      if (result.success) {
-        toast.success('Listing submitted! It will go live after review.')
-        router.push('/dashboard')
-      } else {
-        toast.error(result.error || 'Failed to create listing')
+    const failed = []
+    let ok = 0
+    for (const item of items) {
+      try {
+        const res    = await fetch('/api/listings', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body:    JSON.stringify(item),
+        })
+        const result = await res.json()
+        if (result.success) ok++
+        else failed.push(item)
+      } catch {
+        failed.push(item)
       }
-    } catch {
-      toast.error('Something went wrong')
-    } finally {
-      setLoading(false)
     }
+    setLoading(false)
+
+    if (failed.length === 0) {
+      toast.success(`${ok} listing${ok !== 1 ? 's' : ''} submitted! They'll go live after review.`)
+      router.push('/dashboard')
+    } else {
+      setQueue(failed)
+      resetForNext()
+      toast.error(`${ok} submitted, ${failed.length} failed. The failed ones are kept — try again.`)
+    }
+  }
+
+  // Final submit: include the current form if it's filled, plus everything queued.
+  function handleSubmitAll() {
+    const currentFilled = images.length > 0 || !!getValues('title')
+    if (currentFilled) {
+      handleSubmit((data) => {
+        if (images.length === 0) { toast.error('Please upload at least one image'); return }
+        submitAll([...queue, buildPayload(data, images, video)])
+      }, (formErrors) => {
+        const first = Object.values(formErrors)[0]
+        toast.error(first?.message || 'Please fix the highlighted fields')
+      })()
+    } else if (queue.length > 0) {
+      submitAll(queue)
+    } else {
+      toast.error('Add a listing first')
+    }
+  }
+
+  function removeFromQueue(idx) {
+    setQueue((q) => q.filter((_, i) => i !== idx))
   }
 
   if (!user) return null
@@ -167,10 +229,7 @@ async function fetchAndFillProfile() {
       </div>
 
       <form
-        onSubmit={handleSubmit(onSubmit, (formErrors) => {
-          const first = Object.values(formErrors)[0]
-          toast.error(first?.message || 'Please fix the highlighted fields')
-        })}
+        onSubmit={(e) => { e.preventDefault(); handleSubmitAll() }}
         className="space-y-6"
       >
 
@@ -496,19 +555,68 @@ async function fetchAndFillProfile() {
           </div>
         </section>
 
-        {/* Submit */}
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full btn-primary py-3.5 text-base flex items-center justify-center gap-2"
-        >
-          {loading
-            ? <><Loader2 size={18} className="animate-spin" /> Submitting…</>
-            : 'Submit listing for review'}
-        </button>
+        {/* Staged batch */}
+        {queue.length > 0 && (
+          <section className="bg-gem-50 border border-gem-200 rounded-xl p-4">
+            <h2 className="text-sm font-semibold text-gem-800 mb-3">
+              Batch — {queue.length} listing{queue.length !== 1 ? 's' : ''} ready
+            </h2>
+            <div className="space-y-2">
+              {queue.map((item, i) => (
+                <div key={i} className="flex items-center gap-3 bg-white border border-gray-200 rounded-lg p-2">
+                  <div className="w-11 h-11 rounded-md overflow-hidden bg-gray-100 shrink-0">
+                    {item.images[0] && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={item.images[0].imageUrl} alt={item.title} className="w-full h-full object-cover" />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 truncate">{item.title}</p>
+                    <p className="text-xs text-gray-500">
+                      {item.gemType} · {item.price === null ? 'Price on Inquiry' : `$${item.price}`}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeFromQueue(i)}
+                    disabled={loading}
+                    className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    title="Remove from batch"
+                  >
+                    <Trash2 size={15} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Actions */}
+        <div className="space-y-3">
+          <button
+            type="button"
+            onClick={handleAddAnother}
+            disabled={loading}
+            className="w-full btn-secondary py-3 flex items-center justify-center gap-2"
+          >
+            <PlusCircle size={17} /> Add another gem to this batch
+          </button>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full btn-primary py-3.5 text-base flex items-center justify-center gap-2"
+          >
+            {loading
+              ? <><Loader2 size={18} className="animate-spin" /> Submitting…</>
+              : queue.length > 0
+                ? `Submit ${queue.length + ((images.length > 0 || watch('title')) ? 1 : 0)} listings for review`
+                : 'Submit listing for review'}
+          </button>
+        </div>
 
         <p className="text-xs text-center text-gray-400">
-          By submitting you confirm this listing is accurate and complies with our terms.
+          By submitting you confirm these listings are accurate and comply with our terms.
         </p>
       </form>
     </div>
