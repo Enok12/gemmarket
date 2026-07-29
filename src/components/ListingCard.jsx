@@ -105,7 +105,10 @@ export default function ListingCard({ listing, showStatus = false }) {
             const pref = user?.primaryContact || 'WHATSAPP'
             const telegramHandle = listing.telegram || listing.user?.telegram
             const lineId         = listing.line     || listing.user?.line
-            if (pref === 'TELEGRAM' && telegramHandle) {
+            const available      = { WHATSAPP: !!listing.whatsappNumber, TELEGRAM: !!telegramHandle, LINE: !!lineId }
+            // Prefer the viewer's channel, else the first the listing actually has.
+            const choice = [pref, 'WHATSAPP', 'TELEGRAM', 'LINE'].find((k) => available[k])
+            if (choice === 'TELEGRAM' && telegramHandle) {
               return (
                 <ContactGate>
                   <a
@@ -122,7 +125,7 @@ export default function ListingCard({ listing, showStatus = false }) {
                 </ContactGate>
               )
             }
-            if (pref === 'LINE' && lineId) {
+            if (choice === 'LINE' && lineId) {
               return (
                 <ContactGate>
                   <a
@@ -139,7 +142,10 @@ export default function ListingCard({ listing, showStatus = false }) {
                 </ContactGate>
               )
             }
-            return <WhatsAppButton listingId={listing.id} listingTitle={listing.title} compact />
+            if (choice === 'WHATSAPP') {
+              return <WhatsAppButton listingId={listing.id} listingTitle={listing.title} compact />
+            }
+            return null
           })()}
         </div>
       </div>

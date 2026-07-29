@@ -25,6 +25,7 @@ export function formatPrice(price) {
 }
 
 export function buildWhatsAppLink(number, listingTitle, listingId) {
+  if (!number) return null
   const listingUrl = `${process.env.NEXT_PUBLIC_APP_URL}/listings/${listingId}`
   const message = encodeURIComponent(
     `Hello, I'm interested in your listing: "${listingTitle}". Is it still available?\n\nView listing: ${listingUrl}`
@@ -114,6 +115,11 @@ export const COUNTRIES = [
 export const TREATMENT_OPTIONS = ['Natural', 'Heated', 'Unheated']
 
 export const CERTIFICATION_OPTIONS = ['Available', 'On request', 'Not available']
+
+export const CUT_OPTIONS = [
+  'Round', 'Heart', 'Radiant', 'Princess', 'Asscher', 'Cushion',
+  'Pear', 'Emerald', 'Oval', 'Marquise', 'Other',
+]
 
 export const CLARITY_OPTIONS = [
   'FL', 'IF', 'VVS1', 'VVS2', 'VS1', 'VS2',

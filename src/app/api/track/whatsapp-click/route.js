@@ -20,6 +20,7 @@ export async function POST(req) {
 
     if (!listing)                      return apiError('Listing not found', 404)
     if (listing.status !== 'APPROVED') return apiError('Listing not available', 403)
+    if (!listing.whatsappNumber)       return apiError('This listing has no WhatsApp number', 400)
 
     // Increment click counter
     await prisma.tracking.upsert({

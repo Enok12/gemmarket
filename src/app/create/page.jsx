@@ -8,7 +8,7 @@ import { z } from 'zod'
 import { useAuth } from '@/hooks/useAuth'
 import toast from 'react-hot-toast'
 import ImageUpload from '@/components/ImageUpload'
-import { GEM_TYPES, COUNTRIES, CLARITY_OPTIONS, TREATMENT_OPTIONS, CERTIFICATION_OPTIONS } from '@/lib/utils'
+import { GEM_TYPES, COUNTRIES, CLARITY_OPTIONS, TREATMENT_OPTIONS, CERTIFICATION_OPTIONS, CUT_OPTIONS } from '@/lib/utils'
 import { Loader2, Info } from 'lucide-react'
 import VideoUpload from '@/components/VideoUpload'
 
@@ -28,13 +28,15 @@ const schema = z.object({
   carat:          z.number({ invalid_type_error: 'Enter a valid carat weight' }).positive('Must be positive'),
   color:          z.string().min(1, 'Color is required'),
   clarity:        z.string().optional(),
-  cut:            z.string().optional(),
+  cutType:        z.string().min(1, 'Select a cut type'),
+  cutOther:       z.string().optional(),
   treatment:      z.string().optional(),
   origin:         z.string().optional(),
   description:    z.string().min(20, 'Description must be at least 20 characters'),
-  whatsappNumber: z.string().min(7, 'Enter your WhatsApp number'),
+  whatsappNumber: z.string().optional(),
   telegram: z.string().nullable().optional().transform(v => v || null),
   line:     z.string().nullable().optional().transform(v => v || null),
+  primaryContact: z.enum(['WHATSAPP', 'LINE', 'TELEGRAM']).default('WHATSAPP'),
   location:       z.string().optional(),
   country:        z.string().min(1, 'Select a country'),
   city:           z.string().min(1, 'City is required'),
@@ -43,6 +45,21 @@ const schema = z.object({
 }).refine((d) => d.priceOnInquiry || (typeof d.price === 'number' && d.price > 0), {
   message: 'Enter a valid price or select Price on Inquiry',
   path: ['price'],
+}).refine((d) => d.cutType !== 'Other' || (d.cutOther && d.cutOther.trim().length > 0), {
+  message: 'Enter the cut type',
+  path: ['cutOther'],
+}).superRefine((d, ctx) => {
+  // The seller's primary contact channel is mandatory; the others are optional.
+  const pc = d.primaryContact || 'WHATSAPP'
+  if (pc === 'WHATSAPP' && !(d.whatsappNumber && d.whatsappNumber.trim().length >= 7)) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['whatsappNumber'], message: "Your WhatsApp number is required — it's your primary contact" })
+  }
+  if (pc === 'LINE' && !d.line) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['line'], message: "Your Line ID is required — it's your primary contact" })
+  }
+  if (pc === 'TELEGRAM' && !d.telegram) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['telegram'], message: "Your Telegram username is required — it's your primary contact" })
+  }
 })
 
 export default function CreateListingPage() {
@@ -80,6 +97,7 @@ async function fetchAndFillProfile() {
       setValue('whatsappNumber', u.whatsapp || '')
       setValue('telegram',       u.telegram || '')
       setValue('line',           u.line     || '')
+      setValue('primaryContact', u.primaryContact || 'WHATSAPP')
     }
   } catch {
     // silently fail — user can fill manually
@@ -103,6 +121,7 @@ async function fetchAndFillProfile() {
         },
         body: JSON.stringify({
           ...data,
+          cut:      data.cutType === 'Other' ? data.cutOther.trim() : data.cutType,
           price:    data.priceOnInquiry ? null : data.price,
           telegram: data.telegram || null,
           line:     data.line     || null,
@@ -128,6 +147,8 @@ async function fetchAndFillProfile() {
 
   const descLength     = watch('description')?.length ?? 0
   const priceOnInquiry = watch('priceOnInquiry')
+  const cutType        = watch('cutType')
+  const primaryContact = watch('primaryContact') || user?.primaryContact || 'WHATSAPP'
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -322,12 +343,24 @@ async function fetchAndFillProfile() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Cut <span className="text-gray-400 font-normal">(optional)</span></label>
-              <input
-                {...register('cut')}
-                placeholder="e.g. Oval, Cushion, Round Brilliant"
-                className="input-field"
-              />
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                Cut <span className="text-red-500">*</span>
+              </label>
+              <select {...register('cutType')} className="input-field">
+                <option value="">Select cut…</option>
+                {CUT_OPTIONS.map((c) => <option key={c} value={c}>{c}</option>)}
+              </select>
+              {errors.cutType && <p className="text-xs text-red-500 mt-1">{errors.cutType.message}</p>}
+              {cutType === 'Other' && (
+                <>
+                  <input
+                    {...register('cutOther')}
+                    placeholder="Enter the cut type"
+                    className="input-field mt-2"
+                  />
+                  {errors.cutOther && <p className="text-xs text-red-500 mt-1">{errors.cutOther.message}</p>}
+                </>
+              )}
             </div>
 
             <div>
@@ -390,7 +423,9 @@ async function fetchAndFillProfile() {
             {/* WhatsApp */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                WhatsApp number <span className="text-red-500">*</span>
+                WhatsApp number {primaryContact === 'WHATSAPP'
+                  ? <span className="text-red-500">*</span>
+                  : <span className="text-gray-400 font-normal">(optional)</span>}
               </label>
               <input
                 {...register('whatsappNumber')}
@@ -429,7 +464,9 @@ async function fetchAndFillProfile() {
             {/* Telegram */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Telegram <span className="text-gray-400 font-normal">(optional)</span>
+                Telegram {primaryContact === 'TELEGRAM'
+                  ? <span className="text-red-500">*</span>
+                  : <span className="text-gray-400 font-normal">(optional)</span>}
               </label>
               <input
                 {...register('telegram')}
@@ -443,7 +480,9 @@ async function fetchAndFillProfile() {
             {/* Line */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Line ID <span className="text-gray-400 font-normal">(optional)</span>
+                Line ID {primaryContact === 'LINE'
+                  ? <span className="text-red-500">*</span>
+                  : <span className="text-gray-400 font-normal">(optional)</span>}
               </label>
               <input
                 {...register('line')}

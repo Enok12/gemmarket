@@ -15,11 +15,11 @@ const createSchema = z.object({
   carat:          z.number().positive(),
   color:          z.string().min(1),
   clarity:        z.string().optional(),
-  cut:            z.string().optional(),
+  cut:            z.string().min(1),
   treatment:      z.string().optional(),
   origin:         z.string().optional(),
   description:    z.string().min(20),
-  whatsappNumber: z.string().min(7),
+  whatsappNumber: z.string().optional().transform(v => v || null),
   telegram: z.string().nullable().optional().transform(v => v || null),
   line:     z.string().nullable().optional().transform(v => v || null),
   location:       z.string().optional(),
@@ -117,6 +117,22 @@ export async function POST(req) {
     if (!parsed.success) return apiError(parsed.error.errors[0].message, 422)
 
     const { images, videos, ...listingData } = parsed.data
+
+    // Enforce that the seller's primary contact channel is provided.
+    const seller = await prisma.user.findUnique({
+      where:  { id: currentUser.userId },
+      select: { primaryContact: true },
+    })
+    const pc = seller?.primaryContact || 'WHATSAPP'
+    if (pc === 'WHATSAPP' && !(listingData.whatsappNumber && listingData.whatsappNumber.trim().length >= 7)) {
+      return apiError('Your WhatsApp number is required — it is your primary contact', 422)
+    }
+    if (pc === 'LINE' && !listingData.line) {
+      return apiError('Your Line ID is required — it is your primary contact', 422)
+    }
+    if (pc === 'TELEGRAM' && !listingData.telegram) {
+      return apiError('Your Telegram username is required — it is your primary contact', 422)
+    }
 
     // Assign the next GGMP item code. Retry if two listings race for the
     // same code (unique constraint violation, Prisma error P2002).

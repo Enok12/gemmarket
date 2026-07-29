@@ -9,7 +9,7 @@ import Link from 'next/link'
 import { useAuth } from '@/hooks/useAuth'
 import toast from 'react-hot-toast'
 import ImageUpload from '@/components/ImageUpload'
-import { GEM_TYPES, COUNTRIES, CLARITY_OPTIONS, TREATMENT_OPTIONS, CERTIFICATION_OPTIONS } from '@/lib/utils'
+import { GEM_TYPES, COUNTRIES, CLARITY_OPTIONS, TREATMENT_OPTIONS, CERTIFICATION_OPTIONS, CUT_OPTIONS } from '@/lib/utils'
 import { Loader2, ArrowLeft, AlertCircle } from 'lucide-react'
 import VideoUpload from '@/components/VideoUpload'
 
@@ -26,13 +26,16 @@ const schema = z.object({
   carat:          z.number({ invalid_type_error: 'Enter a valid carat weight' }).positive(),
   color:          z.string().min(1),
   clarity:        z.string().optional(),
-  cut:            z.string().optional(),
+  cutType:        z.string().min(1, 'Select a cut type'),
+  cutOther:       z.string().optional(),
   treatment:      z.string().optional(),
   origin:         z.string().optional(),
   description:    z.string().min(20, 'Description must be at least 20 characters'),
-  whatsappNumber: z.string().min(7),
+  whatsappNumber: z.string().optional(),
   telegram: z.string().nullable().optional().transform(v => v || null),
   line:     z.string().nullable().optional().transform(v => v || null),
+  primaryContact: z.enum(['WHATSAPP', 'LINE', 'TELEGRAM']).default('WHATSAPP'),
+  enforceContact: z.boolean().default(true),
   location:       z.string().optional(),
   country:        z.string().min(1, 'Select a country'),
   city:           z.string().min(1, 'City is required'),
@@ -42,6 +45,21 @@ const schema = z.object({
 }).refine((d) => d.priceOnInquiry || (typeof d.price === 'number' && d.price > 0), {
   message: 'Enter a valid price or select Price on Inquiry',
   path: ['price'],
+}).refine((d) => d.cutType !== 'Other' || (d.cutOther && d.cutOther.trim().length > 0), {
+  message: 'Enter the cut type',
+  path: ['cutOther'],
+}).superRefine((d, ctx) => {
+  if (d.enforceContact === false) return   // admin editing someone else's listing
+  const pc = d.primaryContact || 'WHATSAPP'
+  if (pc === 'WHATSAPP' && !(d.whatsappNumber && d.whatsappNumber.trim().length >= 7)) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['whatsappNumber'], message: "Your WhatsApp number is required — it's your primary contact" })
+  }
+  if (pc === 'LINE' && !d.line) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['line'], message: "Your Line ID is required — it's your primary contact" })
+  }
+  if (pc === 'TELEGRAM' && !d.telegram) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['telegram'], message: "Your Telegram username is required — it's your primary contact" })
+  }
 })
 
 export default function EditListingPage() {
@@ -61,6 +79,9 @@ export default function EditListingPage() {
     resolver: zodResolver(schema),
   })
   const priceOnInquiry = watch('priceOnInquiry')
+  const cutType        = watch('cutType')
+  const primaryContact = watch('primaryContact') || user?.primaryContact || 'WHATSAPP'
+  const enforceContact = watch('enforceContact') !== false
 
   useEffect(() => {
     if (!user) { router.push('/login'); return }
@@ -99,13 +120,19 @@ export default function EditListingPage() {
         carat:          l.carat,
         color:          l.color,
         clarity:        l.clarity   || '',
-        cut:            l.cut       || '',
+        // Map the saved cut back onto the dropdown; unknown/custom values → "Other"
+        cutType:        !l.cut ? '' : (CUT_OPTIONS.includes(l.cut) ? l.cut : 'Other'),
+        cutOther:       (!l.cut || CUT_OPTIONS.includes(l.cut)) ? '' : l.cut,
         treatment:      l.treatment || 'Natural',
         origin:         l.origin    || '',
         description:    l.description,
-        whatsappNumber: l.whatsappNumber,
+        whatsappNumber: l.whatsappNumber || '',
         telegram:       l.telegram || '',
         line:           l.line     || '',
+        primaryContact: user?.primaryContact || 'WHATSAPP',
+        // Owners must satisfy their primary-contact requirement; admins editing
+        // someone else's listing are exempt (it isn't their preference).
+        enforceContact: l.user.id === user?.id,
         location:       l.location || '',
         country:        l.country  || 'Sri Lanka',
         city:           l.city     || l.location || '',
@@ -137,6 +164,7 @@ export default function EditListingPage() {
         },
         body: JSON.stringify({
           ...data,
+          cut:      data.cutType === 'Other' ? data.cutOther.trim() : data.cutType,
           price:    data.priceOnInquiry ? null : data.price,
           images: images.map((img) => ({ imageUrl: img.url, publicId: img.publicId })),
           videos: video ? [{ videoUrl: video.url, publicId: video.publicId }] : [],
@@ -320,8 +348,20 @@ export default function EditListingPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Cut</label>
-              <input {...register('cut')} className="input-field" placeholder="Optional" />
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                Cut <span className="text-red-500">*</span>
+              </label>
+              <select {...register('cutType')} className="input-field">
+                <option value="">Select cut…</option>
+                {CUT_OPTIONS.map((c) => <option key={c} value={c}>{c}</option>)}
+              </select>
+              {errors.cutType && <p className="text-xs text-red-500 mt-1">{errors.cutType.message}</p>}
+              {cutType === 'Other' && (
+                <>
+                  <input {...register('cutOther')} placeholder="Enter the cut type" className="input-field mt-2" />
+                  {errors.cutOther && <p className="text-xs text-red-500 mt-1">{errors.cutOther.message}</p>}
+                </>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Treatment</label>
@@ -357,7 +397,11 @@ export default function EditListingPage() {
           <h2 className="text-sm font-semibold text-gray-900">Contact & location</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">WhatsApp number</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                WhatsApp number {enforceContact && primaryContact === 'WHATSAPP'
+                  ? <span className="text-red-500">*</span>
+                  : <span className="text-gray-400 font-normal">(optional)</span>}
+              </label>
               <input {...register('whatsappNumber')} className="input-field" placeholder="+94771234567" />
               {errors.whatsappNumber && <p className="text-xs text-red-500 mt-1">{errors.whatsappNumber.message}</p>}
             </div>
@@ -380,14 +424,18 @@ export default function EditListingPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Telegram <span className="text-gray-400 font-normal">(optional)</span>
+                Telegram {enforceContact && primaryContact === 'TELEGRAM'
+                  ? <span className="text-red-500">*</span>
+                  : <span className="text-gray-400 font-normal">(optional)</span>}
               </label>
               <input {...register('telegram')} type="text" placeholder="@username" className="input-field" />
               {errors.telegram && <p className="text-xs text-red-500 mt-1">{errors.telegram.message}</p>}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Line ID <span className="text-gray-400 font-normal">(optional)</span>
+                Line ID {enforceContact && primaryContact === 'LINE'
+                  ? <span className="text-red-500">*</span>
+                  : <span className="text-gray-400 font-normal">(optional)</span>}
               </label>
               <input {...register('line')} type="text" placeholder="Your Line ID" className="input-field" />
               {errors.line && <p className="text-xs text-red-500 mt-1">{errors.line.message}</p>}

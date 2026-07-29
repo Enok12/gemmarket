@@ -12,7 +12,7 @@ const updateSchema = z.object({
   carat:          z.number().positive().optional(),
   color:          z.string().optional(),
   clarity:        z.string().optional(),
-  cut:            z.string().optional(),
+  cut:            z.string().min(1).optional(),
   treatment:      z.string().optional(),
   origin:         z.string().optional(),
   description:    z.string().min(20).optional(),
@@ -67,6 +67,29 @@ export async function PATCH(req, { params }) {
     const body   = await req.json()
     const parsed = updateSchema.safeParse(body)
     if (!parsed.success) return apiError(parsed.error.errors[0].message, 422)
+
+    // Enforce the owner's primary contact channel (skipped when an admin edits
+    // someone else's listing, since it isn't their preference).
+    if (isOwner && ('whatsappNumber' in parsed.data || 'telegram' in parsed.data || 'line' in parsed.data)) {
+      const seller = await prisma.user.findUnique({
+        where:  { id: listing.userId },
+        select: { primaryContact: true },
+      })
+      const pc  = seller?.primaryContact || 'WHATSAPP'
+      // Fall back to the listing's stored value when a field isn't part of this update.
+      const wa  = 'whatsappNumber' in parsed.data ? parsed.data.whatsappNumber : listing.whatsappNumber
+      const tg  = 'telegram'       in parsed.data ? parsed.data.telegram       : listing.telegram
+      const ln  = 'line'           in parsed.data ? parsed.data.line           : listing.line
+      if (pc === 'WHATSAPP' && !(wa && wa.trim().length >= 7)) {
+        return apiError('Your WhatsApp number is required — it is your primary contact', 422)
+      }
+      if (pc === 'LINE' && !ln) {
+        return apiError('Your Line ID is required — it is your primary contact', 422)
+      }
+      if (pc === 'TELEGRAM' && !tg) {
+        return apiError('Your Telegram username is required — it is your primary contact', 422)
+      }
+    }
 
     // Reset to PENDING if owner changes content (needs re-approval)
     const contentChanged = parsed.data.title || parsed.data.description || 'price' in parsed.data
