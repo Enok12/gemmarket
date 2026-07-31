@@ -6,8 +6,7 @@ import { prisma } from '@/lib/prisma'
 import { signToken } from '@/lib/auth'
 import { apiSuccess, apiError } from '@/lib/utils'
 import { loginLimiter, checkRateLimit } from '@/lib/ratelimit'
-import { generateOtp } from '@/lib/otp'
-import { sendOtpEmail } from '@/lib/email'
+import { issueVerification } from '@/lib/otp'
 
 
 const schema = z.object({
@@ -41,21 +40,17 @@ export async function POST(req) {
       // route them back to the verification screen (they may have lost the
       // original /verify link by closing the app before entering the code).
       if (!user.isVerified) {
-        const code = generateOtp()
-        await prisma.otp.create({
-          data: { userId: user.id, code, expiresAt: new Date(Date.now() + 10 * 60 * 1000) },
-        })
         try {
-          await sendOtpEmail(user.email, user.name, code)
+          await issueVerification(user)
         } catch (e) {
-          console.error('Resend OTP email failed on login:', e)
+          console.error('Resend verification email failed on login:', e)
         }
         return NextResponse.json(
           {
             success: false,
             needsVerification: true,
             userId: user.id,
-            error: "Please verify your email. We've sent a new code to your inbox.",
+            error: "Please verify your email. We've sent a fresh verification link to your inbox.",
           },
           { status: 403 }
         )

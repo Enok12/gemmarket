@@ -3,8 +3,7 @@ export const dynamic = 'force-dynamic'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess, apiError } from '@/lib/utils'
-import { sendOtpEmail } from '@/lib/email'
-import { generateOtp } from '@/lib/otp'
+import { issueVerification } from '@/lib/otp'
 import { resendOtpLimiter, checkRateLimit } from '@/lib/ratelimit'
 
 
@@ -29,25 +28,16 @@ export async function POST(req) {
     if (!user)           return apiError('User not found', 404)
     if (user.isVerified) return apiError('Already verified', 400)
 
-    // Invalidate all existing unused OTPs
+    // Invalidate all existing unused OTPs (both code and link tokens)
     await prisma.otp.updateMany({
       where: { userId, used: false },
       data:  { used: true },
     })
 
-    // Generate new OTP
-    const code = generateOtp()
-    await prisma.otp.create({
-      data: {
-        userId,
-        code,
-        expiresAt: new Date(Date.now() + 10 * 60 * 1000),
-      },
-    })
+    // Issue a fresh verification link + code (valid 1 hour)
+    await issueVerification(user)
 
-    await sendOtpEmail(user.email, user.name, code)
-
-    return apiSuccess({ message: 'OTP resent successfully' })
+    return apiSuccess({ message: 'Verification link resent successfully' })
   } catch (err) {
     console.error('Resend OTP error:', err)
     return apiError('Internal server error', 500)

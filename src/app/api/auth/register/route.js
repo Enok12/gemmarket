@@ -4,8 +4,7 @@ import bcrypt from 'bcryptjs'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess, apiError } from '@/lib/utils'
-import { sendOtpEmail } from '@/lib/email'
-import { generateOtp } from '@/lib/otp'
+import { issueVerification } from '@/lib/otp'
 import { registerLimiter, checkRateLimit } from '@/lib/ratelimit'
 
 
@@ -48,11 +47,7 @@ export async function POST(req) {
         where: { id: existing.id },
         data:  { name, password: rehashed, phone: phone || null, primaryContact: primaryContact || 'WHATSAPP' },
       })
-      const newCode = generateOtp()
-      await prisma.otp.create({
-        data: { userId: updated.id, code: newCode, expiresAt: new Date(Date.now() + 10 * 60 * 1000) },
-      })
-      await sendOtpEmail(email, name, newCode)
+      await issueVerification(updated)
       return apiSuccess({ userId: updated.id, email: updated.email }, 200)
     }
 
@@ -70,18 +65,8 @@ export async function POST(req) {
     },
   })
 
-    // Generate OTP and save to DB (expires in 10 minutes)
-    const code = generateOtp()
-    await prisma.otp.create({
-      data: {
-        userId:    user.id,
-        code,
-        expiresAt: new Date(Date.now() + 10 * 60 * 1000),
-      },
-    })
-
-    // Send OTP email
-    await sendOtpEmail(email, name, code)
+    // Send verification link + code (valid 1 hour)
+    await issueVerification(user)
 
     return apiSuccess({ userId: user.id, email: user.email }, 201)
   } catch (err) {
