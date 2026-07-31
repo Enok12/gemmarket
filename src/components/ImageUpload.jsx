@@ -4,40 +4,51 @@ import { useCallback, useState } from 'react'
 import { ImagePlus, X, Loader2 } from 'lucide-react'
 import Image from 'next/image'
 import { useAuth } from '@/hooks/useAuth'
+import { uploadToCloudinary } from '@/lib/uploadToCloudinary'
 
 export default function ImageUpload({ images, onChange, maxImages = 5 }) {
   const { token }    = useAuth()
   const [uploading, setUploading] = useState(false)
+  const [progress, setProgress]   = useState(0)
   const [dragOver, setDragOver]   = useState(false)
-
-  async function uploadFile(file) {
-    const formData = new FormData()
-    formData.append('file', file)
-    try {
-      const res  = await fetch('/api/upload', {
-        method:  'POST',
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-        body:    formData,
-      })
-      const data = await res.json()
-      return data.success ? data.data : null
-    } catch {
-      return null
-    }
-  }
 
   const handleFiles = useCallback(async (files) => {
     const remaining = maxImages - images.length
-    const toUpload  = Array.from(files).slice(0, remaining)
+    const picked    = Array.from(files).slice(0, remaining)
+
+    // Client-side guardrails (Cloudinary also enforces its own limits)
+    const allowed  = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
+    const toUpload = picked.filter((file) => {
+      if (!allowed.includes(file.type)) { alert(`"${file.name}" — use JPEG, PNG or WebP`); return false }
+      if (file.size > 10 * 1024 * 1024)  { alert(`"${file.name}" is too large — max 10 MB`); return false }
+      return true
+    })
     if (!toUpload.length) return
 
     setUploading(true)
-    const results = await Promise.all(toUpload.map(uploadFile))
-    const valid   = results.filter(Boolean)
+    setProgress(0)
+
+    // Track per-file progress and show the overall average across the batch.
+    const parts = new Array(toUpload.length).fill(0)
+    const results = await Promise.all(
+      toUpload.map((file, i) =>
+        uploadToCloudinary(file, {
+          type: 'image',
+          token,
+          onProgress: (p) => {
+            parts[i] = p
+            setProgress(Math.round(parts.reduce((a, b) => a + b, 0) / parts.length))
+          },
+        }).catch(() => null)
+      )
+    )
+    const valid = results.filter(Boolean)
+    if (valid.length < toUpload.length) alert('Some images failed to upload. Please try again.')
     onChange([...images, ...valid])
     setUploading(false)
+    setProgress(0)
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [images, maxImages, onChange])
+  }, [images, maxImages, onChange, token])
 
   function handleDrop(e) {
     e.preventDefault()
@@ -67,10 +78,13 @@ export default function ImageUpload({ images, onChange, maxImages = 5 }) {
             disabled={uploading}
           />
           {uploading ? (
-            <>
+            <div className="w-full px-6 flex flex-col items-center">
               <Loader2 size={24} className="text-gem-500 animate-spin mb-2" />
-              <span className="text-sm text-gray-500">Uploading…</span>
-            </>
+              <span className="text-sm text-gray-600 font-medium">Uploading… {progress}%</span>
+              <div className="w-full max-w-xs h-1.5 bg-gray-200 rounded-full mt-2 overflow-hidden">
+                <div className="h-full bg-gem-500 transition-all duration-200" style={{ width: `${progress}%` }} />
+              </div>
+            </div>
           ) : (
             <>
               <ImagePlus size={24} className="text-gray-400 mb-2" />

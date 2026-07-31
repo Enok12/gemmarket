@@ -3,28 +3,13 @@
 import { useState } from 'react'
 import { Video, X, Loader2, Play } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
+import { uploadToCloudinary } from '@/lib/uploadToCloudinary'
 
 export default function VideoUpload({ video, onChange }) {
   const { token }    = useAuth()
   const [uploading, setUploading] = useState(false)
+  const [progress, setProgress]   = useState(0)
   const [dragOver, setDragOver]   = useState(false)
-
-  async function uploadFile(file) {
-    const formData = new FormData()
-    formData.append('file', file)
-    formData.append('type', 'video')
-    try {
-      const res  = await fetch('/api/upload', {
-        method:  'POST',
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-        body:    formData,
-      })
-      const data = await res.json()
-      return data.success ? data.data : null
-    } catch {
-      return null
-    }
-  }
 
   async function handleFile(file) {
     if (!file) return
@@ -42,9 +27,16 @@ export default function VideoUpload({ video, onChange }) {
     }
 
     setUploading(true)
-    const result = await uploadFile(file)
-    if (result) onChange(result)
-    setUploading(false)
+    setProgress(0)
+    try {
+      const result = await uploadToCloudinary(file, { type: 'video', token, onProgress: setProgress })
+      if (result) onChange(result)
+    } catch (e) {
+      alert(e.message || 'Upload failed')
+    } finally {
+      setUploading(false)
+      setProgress(0)
+    }
   }
 
   function handleDrop(e) {
@@ -79,11 +71,13 @@ export default function VideoUpload({ video, onChange }) {
             disabled={uploading}
           />
           {uploading ? (
-            <>
+            <div className="w-full px-6 flex flex-col items-center">
               <Loader2 size={24} className="text-gem-500 animate-spin mb-2" />
-              <span className="text-sm text-gray-500">Uploading video…</span>
-              <span className="text-xs text-gray-400 mt-1">This may take a moment</span>
-            </>
+              <span className="text-sm text-gray-600 font-medium">Uploading video… {progress}%</span>
+              <div className="w-full max-w-xs h-1.5 bg-gray-200 rounded-full mt-2 overflow-hidden">
+                <div className="h-full bg-gem-500 transition-all duration-200" style={{ width: `${progress}%` }} />
+              </div>
+            </div>
           ) : (
             <>
               <Video size={24} className="text-gray-400 mb-2" />
