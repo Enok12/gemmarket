@@ -6,6 +6,8 @@ import { Toaster } from 'react-hot-toast'
 import BottomNav from '@/components/BottomNav'
 import PageTransition from '@/components/PageTransition'
 import DeepLinkHandler from '@/components/DeepLinkHandler'
+import { Analytics } from '@vercel/analytics/react'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 
 
 const inter = Inter({ subsets: ['latin'] })
@@ -48,6 +50,8 @@ export default function RootLayout({ children }) {
           </footer>
           <Toaster position="top-right" />
         </AuthProvider>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   )
