@@ -41,10 +41,11 @@ export const createListingLimiter = new Ratelimit({
   prefix:  'ratelimit:create-listing',
 })
 
-// 30 requests per hour — upload
+// 200 requests per hour — upload (bulk-add can legitimately upload many
+// images/videos in one session: several listings × up to 5 photos each)
 export const uploadLimiter = new Ratelimit({
   redis,
-  limiter: Ratelimit.slidingWindow(30, '1 h'),
+  limiter: Ratelimit.slidingWindow(200, '1 h'),
   prefix:  'ratelimit:upload',
 })
 

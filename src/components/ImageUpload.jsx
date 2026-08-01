@@ -29,21 +29,31 @@ export default function ImageUpload({ images, onChange, maxImages = 5 }) {
     setProgress(0)
 
     // Track per-file progress and show the overall average across the batch.
-    const parts = new Array(toUpload.length).fill(0)
+    const parts  = new Array(toUpload.length).fill(0)
+    const errors = []
     const results = await Promise.all(
-      toUpload.map((file, i) =>
-        uploadToCloudinary(file, {
-          type: 'image',
-          token,
-          onProgress: (p) => {
-            parts[i] = p
-            setProgress(Math.round(parts.reduce((a, b) => a + b, 0) / parts.length))
-          },
-        }).catch(() => null)
-      )
+      toUpload.map(async (file, i) => {
+        try {
+          return await uploadToCloudinary(file, {
+            type: 'image',
+            token,
+            onProgress: (p) => {
+              parts[i] = p
+              setProgress(Math.round(parts.reduce((a, b) => a + b, 0) / parts.length))
+            },
+          })
+        } catch (e) {
+          errors.push(e.message || 'Upload failed')
+          return null
+        }
+      })
     )
     const valid = results.filter(Boolean)
-    if (valid.length < toUpload.length) alert('Some images failed to upload. Please try again.')
+    if (errors.length) {
+      const failed = errors.length
+      // Show the actual reason (rate limit, Cloudinary error, network, …)
+      alert(`${failed} image${failed > 1 ? 's' : ''} failed: ${errors[0]}`)
+    }
     onChange([...images, ...valid])
     setUploading(false)
     setProgress(0)
