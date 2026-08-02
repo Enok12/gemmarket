@@ -202,7 +202,19 @@ async function fetchAndFillProfile() {
   }
 
   function removeFromQueue(idx) {
+    const item = queue[idx]
     setQueue((q) => q.filter((_, i) => i !== idx))
+    // The staged gem was never submitted — clean its uploads out of Cloudinary.
+    const del = (publicId, resourceType) => {
+      if (!publicId) return
+      fetch('/api/upload/delete', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body:    JSON.stringify({ publicId, resourceType }),
+      }).catch(() => {})
+    }
+    item?.images?.forEach((im) => del(im.publicId, 'image'))
+    item?.videos?.forEach((v)  => del(v.publicId, 'video'))
   }
 
   if (!user) return null

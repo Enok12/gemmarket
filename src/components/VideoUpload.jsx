@@ -30,7 +30,7 @@ export default function VideoUpload({ video, onChange }) {
     setProgress(0)
     try {
       const result = await uploadToCloudinary(file, { type: 'video', token, onProgress: setProgress })
-      if (result) onChange(result)
+      if (result) onChange({ ...result, _new: true })  // _new → deletable on remove
     } catch (e) {
       alert(e.message || 'Upload failed')
     } finally {
@@ -47,7 +47,15 @@ export default function VideoUpload({ video, onChange }) {
   }
 
   function removeVideo() {
+    const v = video
     onChange(null)
+    if (v?._new && v.publicId) {
+      fetch('/api/upload/delete', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body:    JSON.stringify({ publicId: v.publicId, resourceType: 'video' }),
+      }).catch(() => {})
+    }
   }
 
   return (

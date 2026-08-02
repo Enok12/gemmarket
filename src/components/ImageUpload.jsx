@@ -34,7 +34,7 @@ export default function ImageUpload({ images, onChange, maxImages = 5 }) {
     const results = await Promise.all(
       toUpload.map(async (file, i) => {
         try {
-          return await uploadToCloudinary(file, {
+          const r = await uploadToCloudinary(file, {
             type: 'image',
             token,
             onProgress: (p) => {
@@ -42,6 +42,9 @@ export default function ImageUpload({ images, onChange, maxImages = 5 }) {
               setProgress(Math.round(parts.reduce((a, b) => a + b, 0) / parts.length))
             },
           })
+          // _new marks images uploaded this session, so removing them also
+          // deletes from Cloudinary (existing listing images are left alone).
+          return r ? { ...r, _new: true } : null
         } catch (e) {
           errors.push(e.message || 'Upload failed')
           return null
@@ -67,7 +70,17 @@ export default function ImageUpload({ images, onChange, maxImages = 5 }) {
   }
 
   function removeImage(index) {
+    const img = images[index]
     onChange(images.filter((_, i) => i !== index))
+    // Only delete from Cloudinary if it was uploaded in this session (not a
+    // saved listing image — that could break the listing if the edit is cancelled).
+    if (img?._new && img.publicId) {
+      fetch('/api/upload/delete', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body:    JSON.stringify({ publicId: img.publicId, resourceType: 'image' }),
+      }).catch(() => {})
+    }
   }
 
   return (
