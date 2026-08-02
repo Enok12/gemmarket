@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")   // pooled (PgBouncer) — used at runtime
+  directUrl = env("DIRECT_URL")     // unpooled — used for db push / migrations
 }
 
 enum Role {
@@ -60,7 +61,7 @@ model Listing {
   treatment          String?
   origin             String?
   description        String        @db.Text
-  whatsappNumber     String
+  whatsappNumber     String?
   telegram           String?
   line               String?
   location           String?

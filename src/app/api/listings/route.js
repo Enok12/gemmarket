@@ -19,7 +19,7 @@ const createSchema = z.object({
   treatment:      z.string().optional(),
   origin:         z.string().optional(),
   description:    z.string().min(20),
-  whatsappNumber: z.string().optional().transform(v => v || null),
+  whatsappNumber: z.string().nullable().optional().transform(v => v || null),
   telegram: z.string().nullable().optional().transform(v => v || null),
   line:     z.string().nullable().optional().transform(v => v || null),
   location:       z.string().optional(),

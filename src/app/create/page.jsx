@@ -158,6 +158,7 @@ async function fetchAndFillProfile() {
     setLoading(true)
     const failed = []
     let ok = 0
+    let firstError = null
     for (const item of items) {
       try {
         const res    = await fetch('/api/listings', {
@@ -166,9 +167,23 @@ async function fetchAndFillProfile() {
           body:    JSON.stringify(item),
         })
         const result = await res.json()
-        if (result.success) ok++
-        else failed.push(item)
+        if (result.success) {
+          ok++
+          continue
+        }
+        // Expired/invalid session — stop immediately rather than fail every
+        // remaining item silently; send the user to log back in.
+        if (res.status === 401) {
+          setLoading(false)
+          setQueue((q) => [...items.slice(items.indexOf(item)), ...q])
+          toast.error('Your session has expired. Please sign in again — your batch has been kept.')
+          router.push('/login?redirect=/create')
+          return
+        }
+        firstError = firstError || result.error || `Request failed (${res.status})`
+        failed.push(item)
       } catch {
+        firstError = firstError || 'Network error — check your connection'
         failed.push(item)
       }
     }
@@ -180,7 +195,9 @@ async function fetchAndFillProfile() {
     } else {
       setQueue(failed)
       resetForNext()
-      toast.error(`${ok} submitted, ${failed.length} failed. The failed ones are kept — try again.`)
+      toast.error(
+        `${ok} submitted, ${failed.length} failed: ${firstError}. The failed ones are kept — try again.`
+      )
     }
   }
 
