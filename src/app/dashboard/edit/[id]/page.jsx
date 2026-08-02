@@ -63,7 +63,7 @@ const schema = z.object({
 })
 
 export default function EditListingPage() {
-  const { user, token } = useAuth()
+  const { user, token, isLoading } = useAuth()
   const router  = useRouter()
   const params  = useParams()
   const id      = params.id
@@ -84,10 +84,11 @@ export default function EditListingPage() {
   const enforceContact = watch('enforceContact') !== false
 
   useEffect(() => {
+    if (isLoading) return
     if (!user) { router.push('/login'); return }
     fetchListing()
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, id])
+  }, [user, isLoading, id])
 
   async function fetchListing() {
     try {

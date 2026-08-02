@@ -16,7 +16,7 @@ import {
 const PAGE_SIZE = 20
 
 export default function DashboardPage() {
-  const { user, token } = useAuth()
+  const { user, token, isLoading } = useAuth()
   const router = useRouter()
 
   const [listings, setListings]   = useState([])
@@ -26,10 +26,11 @@ export default function DashboardPage() {
   const [search, setSearch]       = useState('')
 
   useEffect(() => {
+    if (isLoading) return
     if (!user) { router.push('/login?redirect=/dashboard'); return }
     fetchMyListings()
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user])
+  }, [user, isLoading])
 
   async function fetchMyListings() {
     setLoading(true)

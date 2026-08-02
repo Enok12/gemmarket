@@ -63,7 +63,7 @@ const schema = z.object({
 })
 
 export default function CreateListingPage() {
-  const { user, token } = useAuth()
+  const { user, token, isLoading } = useAuth()
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [images, setImages]   = useState([])
@@ -78,8 +78,9 @@ export default function CreateListingPage() {
 })
 
   useEffect(() => {
+    if (isLoading) return
     if (!user) router.push('/login?redirect=/create')
-  }, [user, router])
+  }, [user, isLoading, router])
 
   useEffect(() => {
   if (!user || !token) return
