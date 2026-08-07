@@ -44,4 +44,10 @@
     <!-- Permissions -->
 
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Camera: photographing gems directly from the Post a Listing screen -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- Camera hardware is optional, so the app still installs on devices without one -->
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
 </manifest>

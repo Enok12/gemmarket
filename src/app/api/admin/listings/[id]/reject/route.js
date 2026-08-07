@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic'
 import { prisma } from '@/lib/prisma'
 import { getUserFromRequest } from '@/lib/auth'
 import { apiSuccess, apiError } from '@/lib/utils'
+import { sendPushToUsers } from '@/lib/push'
 
 export async function PATCH(req, { params }) {
   try {
@@ -20,6 +21,12 @@ export async function PATCH(req, { params }) {
         user:   { select: { id: true, name: true, email: true } },
       },
     })
+
+    sendPushToUsers(updated.userId, {
+      title: 'Listing needs changes',
+      body:  `"${updated.title}" wasn't approved. Open the app to review and resubmit it.`,
+      data:  { listingId: updated.id, type: 'LISTING_REJECTED' },
+    }).catch(() => {})
 
     return apiSuccess(updated)
   } catch (err) {

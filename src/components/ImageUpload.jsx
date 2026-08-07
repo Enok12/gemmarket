@@ -1,16 +1,21 @@
 'use client'
 
-import { useCallback, useState } from 'react'
-import { ImagePlus, X, Loader2 } from 'lucide-react'
+import { useCallback, useEffect, useState } from 'react'
+import { ImagePlus, X, Loader2, Camera } from 'lucide-react'
 import Image from 'next/image'
 import { useAuth } from '@/hooks/useAuth'
 import { uploadToCloudinary } from '@/lib/uploadToCloudinary'
+import { capturePhoto, isCameraAvailable } from '@/lib/capturePhoto'
 
 export default function ImageUpload({ images, onChange, maxImages = 5 }) {
   const { token, sessionExpired } = useAuth()
   const [uploading, setUploading] = useState(false)
   const [progress, setProgress]   = useState(0)
   const [dragOver, setDragOver]   = useState(false)
+  const [hasCamera, setHasCamera] = useState(false)
+
+  // Only show the camera button inside the native app.
+  useEffect(() => { isCameraAvailable().then(setHasCamera) }, [])
 
   const handleFiles = useCallback(async (files) => {
     const remaining = maxImages - images.length
@@ -95,8 +100,33 @@ export default function ImageUpload({ images, onChange, maxImages = 5 }) {
     }
   }
 
+  // Take a photo with the device camera, then send it through the same
+  // validation + upload path as a picked file.
+  async function handleTakePhoto() {
+    if (uploading || images.length >= maxImages) return
+    try {
+      const file = await capturePhoto()
+      if (file) await handleFiles([file])
+    } catch (e) {
+      // User cancelling the camera throws — ignore that, report anything else.
+      const msg = String(e?.message || '')
+      if (!/cancel/i.test(msg)) alert(msg || 'Could not open the camera')
+    }
+  }
+
   return (
     <div className="space-y-3">
+      {hasCamera && images.length < maxImages && (
+        <button
+          type="button"
+          onClick={handleTakePhoto}
+          disabled={uploading}
+          className="flex items-center justify-center gap-2 w-full py-3 bg-gem-600 hover:bg-gem-700 disabled:opacity-50 text-white text-sm font-medium rounded-xl transition-colors"
+        >
+          <Camera size={17} /> Take photo
+        </button>
+      )}
+
       {images.length < maxImages && (
         <label
           onDrop={handleDrop}

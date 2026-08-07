@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "851456059753",
+    "project_id": "ggmp-90f3e",
+    "storage_bucket": "ggmp-90f3e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:851456059753:android:4e0c170ec4bdad1781f5f8",
+        "android_client_info": {
+          "package_name": "com.ggmp.marketplace"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQUELVqDtb6pvExAZYZTzWrghW405nGpg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

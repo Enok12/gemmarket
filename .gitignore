@@ -1,6 +1,29 @@
 node_modules/
 .next/
+out/
+
+# Environment / secrets
 .env
 .env.local
+.env.*.local
+
+# Android signing
 ggmp-release.keystore
-ggmp-release-base64.txtcertutil -encodehex -f ggmp-release.keystore ggmp-release-base64.txt 0x40000001
+*.keystore
+*.jks
+ggmp-release-base64.txt
+
+# Firebase service-account private keys (server credentials — never commit)
+**/*firebase-adminsdk*.json
+service-account*.json
+
+# Build output
+android/app/build/
+android/build/
+android/.gradle/
+*.apk
+*.aab
+
+# Misc
+.DS_Store
+*.log

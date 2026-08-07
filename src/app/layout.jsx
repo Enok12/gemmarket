@@ -6,6 +6,7 @@ import { Toaster } from 'react-hot-toast'
 import BottomNav from '@/components/BottomNav'
 import PageTransition from '@/components/PageTransition'
 import DeepLinkHandler from '@/components/DeepLinkHandler'
+import PushRegistrar from '@/components/PushRegistrar'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 
@@ -31,6 +32,7 @@ export default function RootLayout({ children }) {
       <body className={`${inter.className} bg-gray-50 text-gray-900 antialiased`}>
         <AuthProvider>
           <DeepLinkHandler />
+          <PushRegistrar />
           <Navbar />
             <main className="min-h-screen">
             <PageTransition>

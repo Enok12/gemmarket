@@ -5,6 +5,7 @@ import { getUserFromRequest } from '@/lib/auth'
 import { apiSuccess, apiError } from '@/lib/utils'
 import { createListingLimiter, checkRateLimit } from '@/lib/ratelimit'
 import { generateItemCode } from '@/lib/itemCode'
+import { sendPushToAdmins } from '@/lib/push'
 
 
 const createSchema = z.object({
@@ -166,6 +167,13 @@ export async function POST(req) {
         if (!isCodeCollision || attempt >= 4) throw err
       }
     }
+
+    // Alert admins that something is waiting for review (fire-and-forget).
+    sendPushToAdmins({
+      title: 'New listing to review',
+      body:  `${listing.user?.name || 'A seller'} submitted "${listing.title}".`,
+      data:  { listingId: listing.id, type: 'LISTING_PENDING' },
+    }).catch(() => {})
 
     return apiSuccess(listing, 201)
   } catch (err) {
