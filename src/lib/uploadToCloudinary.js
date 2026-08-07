@@ -19,6 +19,14 @@ export async function uploadToCloudinary(file, { type = 'image', token, onProgre
     headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
     body:    JSON.stringify({ type }),
   })
+  // Expired/invalid login — flag it so the caller can end the session cleanly
+  // instead of surfacing a bare "Unauthorized".
+  if (signRes.status === 401) {
+    const err = new Error('Your session has expired')
+    err.code = 'UNAUTHORIZED'
+    throw err
+  }
+
   const signJson = await signRes.json()
   if (!signJson.success) throw new Error(signJson.error || 'Could not prepare upload')
 

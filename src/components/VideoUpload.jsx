@@ -6,7 +6,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { uploadToCloudinary } from '@/lib/uploadToCloudinary'
 
 export default function VideoUpload({ video, onChange }) {
-  const { token }    = useAuth()
+  const { token, sessionExpired } = useAuth()
   const [uploading, setUploading] = useState(false)
   const [progress, setProgress]   = useState(0)
   const [dragOver, setDragOver]   = useState(false)
@@ -32,6 +32,7 @@ export default function VideoUpload({ video, onChange }) {
       const result = await uploadToCloudinary(file, { type: 'video', token, onProgress: setProgress })
       if (result) onChange({ ...result, _new: true })  // _new → deletable on remove
     } catch (e) {
+      if (e.code === 'UNAUTHORIZED') { setUploading(false); setProgress(0); sessionExpired(); return }
       alert(e.message || 'Upload failed')
     } finally {
       setUploading(false)

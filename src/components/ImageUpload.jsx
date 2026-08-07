@@ -7,7 +7,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { uploadToCloudinary } from '@/lib/uploadToCloudinary'
 
 export default function ImageUpload({ images, onChange, maxImages = 5 }) {
-  const { token }    = useAuth()
+  const { token, sessionExpired } = useAuth()
   const [uploading, setUploading] = useState(false)
   const [progress, setProgress]   = useState(0)
   const [dragOver, setDragOver]   = useState(false)
@@ -31,6 +31,7 @@ export default function ImageUpload({ images, onChange, maxImages = 5 }) {
     // Track per-file progress and show the overall average across the batch.
     const parts  = new Array(toUpload.length).fill(0)
     const errors = []
+    let unauthorized = false
     const results = await Promise.all(
       toUpload.map(async (file, i) => {
         try {
@@ -46,12 +47,23 @@ export default function ImageUpload({ images, onChange, maxImages = 5 }) {
           // deletes from Cloudinary (existing listing images are left alone).
           return r ? { ...r, _new: true } : null
         } catch (e) {
+          if (e.code === 'UNAUTHORIZED') unauthorized = true
           errors.push(e.message || 'Upload failed')
           return null
         }
       })
     )
     const valid = results.filter(Boolean)
+
+    // Session died — log out and send them to sign in rather than showing a
+    // confusing "Unauthorized" while the UI still looks logged in.
+    if (unauthorized) {
+      setUploading(false)
+      setProgress(0)
+      sessionExpired()
+      return
+    }
+
     if (errors.length) {
       const failed = errors.length
       // Show the actual reason (rate limit, Cloudinary error, network, …)
@@ -61,7 +73,7 @@ export default function ImageUpload({ images, onChange, maxImages = 5 }) {
     setUploading(false)
     setProgress(0)
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [images, maxImages, onChange, token])
+  }, [images, maxImages, onChange, token, sessionExpired])
 
   function handleDrop(e) {
     e.preventDefault()
