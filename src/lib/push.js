@@ -16,13 +16,16 @@ async function getMessaging() {
 
   messagingPromise = (async () => {
     try {
-      const admin = await import('firebase-admin')
-      const app = admin.apps?.length
-        ? admin.apps[0]
-        : admin.initializeApp({
-            credential: admin.credential.cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)),
-          })
-      return admin.messaging(app)
+      // firebase-admin v13+ exposes only the modular API — the old
+      // `admin.credential.cert(...)` namespace no longer exists.
+      const { initializeApp, cert, getApps } = await import('firebase-admin/app')
+      const { getMessaging } = await import('firebase-admin/messaging')
+
+      const app = getApps().length
+        ? getApps()[0]
+        : initializeApp({ credential: cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)) })
+
+      return getMessaging(app)
     } catch (e) {
       console.error('Firebase init failed — pushes disabled:', e.message)
       return null
