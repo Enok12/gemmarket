@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import toast from 'react-hot-toast'
 import { useAuth } from '@/hooks/useAuth'
 
 /**
@@ -53,6 +54,16 @@ export default function PushRegistrar() {
         listeners.push(
           await PushNotifications.addListener('registrationError', (e) => {
             console.error('Push registration failed:', e)
+          })
+        )
+
+        // Android shows nothing in the tray while the app is in the foreground —
+        // it only fires this event. Surface it as an in-app toast instead.
+        listeners.push(
+          await PushNotifications.addListener('pushNotificationReceived', (notification) => {
+            const title = notification?.title || 'GGMP'
+            const body  = notification?.body || ''
+            toast(`${title}${body ? ` — ${body}` : ''}`, { icon: '🔔', duration: 5000 })
           })
         )
 

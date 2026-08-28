@@ -194,7 +194,7 @@ export default function PrivacyPage() {
           <div className="mt-3 p-4 bg-gray-50 rounded-xl text-sm text-gray-700 space-y-1">
             <p><strong>GGMP — Global Gem Marketplace</strong></p>
             <p>Email: privacy@ggmp.com</p>
-            <p>Website: <a href="/" className="text-gem-600 hover:underline">ggmp.com</a></p>
+            <p>Website: <a href="/" className="text-gem-600 hover:underline">ggmp.app</a></p>
           </div>
         </section>
 

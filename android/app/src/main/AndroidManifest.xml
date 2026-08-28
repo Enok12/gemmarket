@@ -48,6 +48,11 @@
     <!-- Camera: photographing gems directly from the Post a Listing screen -->
     <uses-permission android:name="android.permission.CAMERA" />
 
+    <!-- Required on Android 13+ (API 33) to display push notifications.
+         Without it the runtime permission request is auto-denied and no
+         notification is ever shown, even though FCM registration succeeds. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <!-- Camera hardware is optional, so the app still installs on devices without one -->
     <uses-feature android:name="android.hardware.camera" android:required="false" />
 </manifest>
