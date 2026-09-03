@@ -20,7 +20,12 @@ workflows:
           cd android
           chmod +x gradlew
           # bundleRelease -> .aab for the Play Store; assembleRelease -> .apk for sideload testing
+          # Unique, monotonically increasing versionCode from the CI build number.
+          # The +10 offset clears versionCodes 1 and 2, already consumed on Play.
+          VERSION_CODE=$(( ${BUILD_NUMBER:-0} + 10 ))
+          echo "Building with versionCode $VERSION_CODE"
           ./gradlew bundleRelease assembleRelease \
+            -PappVersionCode=$VERSION_CODE \
             -Pandroid.injected.signing.store.file=$CM_BUILD_DIR/android/app/ggmp-release.keystore \
             -Pandroid.injected.signing.store.password=$CM_KEYSTORE_PASSWORD \
             -Pandroid.injected.signing.key.alias=$CM_KEY_ALIAS \
