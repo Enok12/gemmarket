@@ -164,7 +164,7 @@ export default async function HomePage() {
               </section>
               
             <p className="text-md text-gray-600 mb-2 max-w-2xl">
-              We connect you, to the global market place and make your future success. GGMP Global Gem Market Place            </p>
+              We connect you, to the global market place and make your future success.            </p>
             {/* <p className="text-base font-semibold text-gem-700 mb-8">
               GGMP — Global Gemstone Market Place
             </p> */}
