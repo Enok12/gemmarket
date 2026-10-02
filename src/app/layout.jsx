@@ -40,7 +40,9 @@ export default function RootLayout({ children }) {
             </PageTransition>
           </main>
           <BottomNav />
-          <footer className="bg-white border-t border-gray-200 py-8 mt-12">
+          {/* On mobile the fixed BottomNav (64px + safe-area) overlays the page bottom,
+              so reserve room for it; desktop has no bottom nav. */}
+          <footer className="bg-white border-t border-gray-200 pt-8 pb-[calc(6rem+env(safe-area-inset-bottom))] lg:pb-8 mt-12">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
               <p className="text-sm text-gray-500">© {new Date().getFullYear()} GGMP · World's #1 Gemstone Marketplace</p>
               <div className="flex gap-6 text-sm text-gray-500">
