@@ -9,6 +9,7 @@ import { verifyToken } from '@/lib/auth'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import ContactGate from '@/components/ContactGate'
 import ShareButton from '@/components/ShareButton'
+import ImageGallery from '@/components/ImageGallery'
 import {
   MapPin, Scale, Shield, ShieldOff,
   ArrowLeft, Award, Layers, Scissors, Globe, Calendar, CheckCircle, XCircle, Flame
@@ -116,29 +117,7 @@ export default async function ListingDetailPage({ params }) {
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
         {/* ── Left: images ── */}
         <div className="lg:col-span-3">
-          <div className="relative aspect-[4/3] bg-gray-100 rounded-2xl overflow-hidden mb-3">
-            {listing.images[0] ? (
-              <Image
-                src={listing.images[0].imageUrl}
-                alt={listing.title}
-                fill
-                className="object-cover"
-                priority
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-8xl">💎</div>
-            )}
-          </div>
-
-          {listing.images.length > 1 && (
-            <div className="flex gap-2 overflow-x-auto pb-1">
-              {listing.images.map((img, i) => (
-                <div key={img.id} className="relative w-20 h-20 shrink-0 rounded-lg overflow-hidden border border-gray-200">
-                  <Image src={img.imageUrl} alt={`Photo ${i + 1}`} fill className="object-cover" />
-                </div>
-              ))}
-            </div>
-          )}
+          <ImageGallery images={listing.images} title={listing.title} />
 
           {/* Video player */}
           {listing.videos?.length > 0 && (
