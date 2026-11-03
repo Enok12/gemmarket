@@ -33,7 +33,7 @@ export default async function GemsPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
-      <div className="mb-8">
+      <div className="anim-fade-up mb-8">
         <nav className="flex items-center gap-2 text-sm text-gray-500 mb-4">
           <Link href="/" className="hover:text-gem-600 transition-colors">Home</Link>
           <ChevronRight size={14} />
@@ -44,7 +44,7 @@ export default async function GemsPage() {
       </div>
 
       {/* Gem grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+      <div className="stagger grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
         {GEMS.map((gem) => {
           const count = counts[gem] || 0
           return (

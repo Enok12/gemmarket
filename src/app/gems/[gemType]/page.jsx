@@ -42,13 +42,13 @@ export default async function GemStoneTypePage({ params }) {
         <span className="text-gray-900 font-medium">{gemType}</span>
       </nav>
 
-      <div className="mb-8">
+      <div className="anim-fade-up mb-8">
         <h1 className="text-2xl font-bold text-gray-900">{gemType}</h1>
         <p className="text-gray-500 mt-1">Choose the type of stone you're looking for</p>
       </div>
 
       {/* Two options */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="stagger grid grid-cols-1 sm:grid-cols-2 gap-4">
         {OPTIONS.map((opt) => {
           const count = counts[opt.value] || 0
           return (

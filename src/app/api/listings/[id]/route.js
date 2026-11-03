@@ -12,7 +12,7 @@ const updateSchema = z.object({
   carat:          z.number().positive().optional(),
   color:          z.string().optional(),
   clarity:        z.string().optional(),
-  cut:            z.string().min(1).optional(),
+  cut:            z.string().min(1).nullable().optional(),
   treatment:      z.string().optional(),
   origin:         z.string().optional(),
   description:    z.string().min(20).optional(),
@@ -88,6 +88,19 @@ export async function PATCH(req, { params }) {
       }
       if (pc === 'TELEGRAM' && !tg) {
         return apiError('Your Telegram username is required — it is your primary contact', 422)
+      }
+    }
+
+    // Cut is mandatory for cut & polished stones and cleared for rough ones.
+    // Only checked when this request touches either field, so unrelated partial
+    // updates (e.g. an admin editing a price) don't trip on older listings.
+    if ('stoneType' in parsed.data || 'cut' in parsed.data) {
+      const finalStone = parsed.data.stoneType ?? listing.stoneType
+      const finalCut   = 'cut' in parsed.data ? parsed.data.cut : listing.cut
+      if (finalStone === 'ROUGH') {
+        parsed.data.cut = null
+      } else if (!finalCut) {
+        return apiError('Select a cut type for cut & polished stones', 422)
       }
     }
 

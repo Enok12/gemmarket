@@ -62,6 +62,57 @@
   }
 }
 
+/* ── Entrance animations ─────────────────────────────────────────────
+   Every animation uses fill-mode "backwards": the from-state applies during
+   the delay, but no transform is left behind once it finishes, so hover
+   effects and fixed/sticky descendants keep working. */
+@keyframes fade-up  { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+@keyframes fade-in  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes scale-in { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: none; } }
+
+.anim-fade-up  { animation: fade-up  0.55s cubic-bezier(0.22, 1, 0.36, 1) backwards; animation-delay: var(--delay, 0ms); }
+.anim-fade-in  { animation: fade-in  0.45s ease-out backwards;                       animation-delay: var(--delay, 0ms); }
+.anim-scale-in { animation: scale-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) backwards; animation-delay: var(--delay, 0ms); }
+
+.anim-d1 { --delay: 80ms; }
+.anim-d2 { --delay: 160ms; }
+.anim-d3 { --delay: 240ms; }
+.anim-d4 { --delay: 320ms; }
+
+/* Children enter one after another; everything past the 10th shares the last delay. */
+.stagger > *,
+.reveal-stagger.reveal-in > * {
+  animation: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  animation-delay: 500ms;
+}
+.stagger > :nth-child(1),  .reveal-stagger.reveal-in > :nth-child(1)  { animation-delay: 0ms; }
+.stagger > :nth-child(2),  .reveal-stagger.reveal-in > :nth-child(2)  { animation-delay: 50ms; }
+.stagger > :nth-child(3),  .reveal-stagger.reveal-in > :nth-child(3)  { animation-delay: 100ms; }
+.stagger > :nth-child(4),  .reveal-stagger.reveal-in > :nth-child(4)  { animation-delay: 150ms; }
+.stagger > :nth-child(5),  .reveal-stagger.reveal-in > :nth-child(5)  { animation-delay: 200ms; }
+.stagger > :nth-child(6),  .reveal-stagger.reveal-in > :nth-child(6)  { animation-delay: 250ms; }
+.stagger > :nth-child(7),  .reveal-stagger.reveal-in > :nth-child(7)  { animation-delay: 300ms; }
+.stagger > :nth-child(8),  .reveal-stagger.reveal-in > :nth-child(8)  { animation-delay: 350ms; }
+.stagger > :nth-child(9),  .reveal-stagger.reveal-in > :nth-child(9)  { animation-delay: 400ms; }
+.stagger > :nth-child(10), .reveal-stagger.reveal-in > :nth-child(10) { animation-delay: 450ms; }
+
+/* Scroll reveal (see components/Reveal.jsx). The hidden state is only added by
+   JS once the element is known to be below the fold, so nothing is ever left
+   invisible if scripts fail. */
+.reveal-hidden { opacity: 0; transform: translateY(16px); }
+.reveal-hidden.reveal-stagger { opacity: 1; transform: none; }
+.reveal-hidden.reveal-stagger > * { opacity: 0; transform: translateY(16px); }
+.reveal-in:not(.reveal-stagger) {
+  animation: fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  animation-delay: var(--delay, 0ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-fade-up, .anim-fade-in, .anim-scale-in,
+  .stagger > *, .reveal-in, .reveal-stagger.reveal-in > * { animation: none; }
+  .reveal-hidden, .reveal-hidden > * { opacity: 1; transform: none; }
+}
+
 /* iPhone home indicator safe area */
 .pb-safe {
   padding-bottom: max(env(safe-area-inset-bottom), 8px);

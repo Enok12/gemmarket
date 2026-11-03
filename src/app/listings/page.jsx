@@ -64,7 +64,7 @@ function ListingsContent() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
-      <div className="mb-6">
+      <div className="anim-fade-up mb-6">
         <h1 className="text-2xl font-bold text-gray-900 mb-1">
           {activeGemType
             ? `${stoneTypeLabel ? `${stoneTypeLabel} ` : ''}${activeGemType} Listings`
@@ -77,7 +77,7 @@ function ListingsContent() {
       </div>
 
       {/* Search bar */}
-      <form onSubmit={handleSearch} className="flex gap-2 mb-6">
+      <form onSubmit={handleSearch} className="anim-fade-up anim-d1 flex gap-2 mb-6">
         <div className="relative flex-1 max-w-lg">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
@@ -111,7 +111,7 @@ function ListingsContent() {
 
       <div className="flex gap-6">
         {/* Desktop sidebar */}
-        <aside className="hidden lg:block w-56 shrink-0">
+        <aside className="anim-fade-up anim-d2 hidden lg:block w-56 shrink-0">
           <FilterBar />
         </aside>
 
@@ -122,7 +122,7 @@ function ListingsContent() {
               <Loader2 size={28} className="text-gem-500 animate-spin" />
             </div>
           ) : listings.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-24 text-center">
+            <div className="anim-fade-up flex flex-col items-center justify-center py-24 text-center">
               <Package size={40} className="text-gray-300 mb-3" />
               <p className="text-gray-500 font-medium">No listings found</p>
               <p className="text-sm text-gray-400 mt-1">Try adjusting your filters or search terms</p>
@@ -135,7 +135,7 @@ function ListingsContent() {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+              <div className="stagger grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
                 {listings.map((listing) => (
                   <ListingCard key={listing.id} listing={listing} />
                 ))}
@@ -143,7 +143,7 @@ function ListingsContent() {
 
               {/* Pagination */}
               {pagination && pagination.totalPages > 1 && (
-                <div className="flex items-center justify-center gap-2 mt-10">
+                <div className="anim-fade-in flex items-center justify-center gap-2 mt-10">
                   <button
                     onClick={() => goToPage(pagination.page - 1)}
                     disabled={pagination.page <= 1}

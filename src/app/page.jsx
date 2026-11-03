@@ -3,6 +3,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { prisma } from '@/lib/prisma'
 import ListingCard from '@/components/ListingCard'
+import Reveal from '@/components/Reveal'
 import { Search, Shield, MessageCircle, Gem, ArrowRight, Star } from 'lucide-react'
 import { GEM_TYPES } from '@/lib/utils'
 
@@ -142,7 +143,7 @@ export default async function HomePage() {
           <div className="flex items-center justify-between gap-8">
           {/* Left — text */}
           <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 text-sm font-medium px-3 py-1 rounded-full mb-1"
+            <div className="anim-fade-up inline-flex items-center gap-2 text-sm font-medium px-3 py-1 rounded-full mb-1"
               style={{ backgroundColor: '#4169E115', color: '#6235eb' }}>
               <Star size={13} /> World's 1# Online Gemstone Marketplace
             </div>
@@ -152,7 +153,7 @@ export default async function HomePage() {
             </h1> */}
 
               {/* CTA banner */}
-              <section className="max-w-7xl mx-auto px-2 sm:px-1 lg:px-0 py-4">
+              <section className="anim-fade-up anim-d1 max-w-7xl mx-auto px-2 sm:px-1 lg:px-0 py-4">
                 <div className="bg-gem-600 rounded-2xl p-5 md:p-12 text-center">
                   <h2 className="text-2xl font-bold text-white mb-2">Ready to buy or sell your gemstones?</h2>
                   <p className="text-gem-200 mb-2">Join hundreds of sellers reaching verified buyers every day.</p>
@@ -163,13 +164,13 @@ export default async function HomePage() {
                 </div>
               </section>
               
-            <p className="text-md text-gray-600 mb-2 max-w-2xl">
+            <p className="anim-fade-up anim-d2 text-md text-gray-600 mb-2 max-w-2xl">
               We connect you, to the global market place and make your future success.            </p>
             {/* <p className="text-base font-semibold text-gem-700 mb-8">
               GGMP — Global Gemstone Market Place
             </p> */}
 
-          <form action="/listings" method="GET" className="hidden md:flex gap-3 max-w-xl">
+          <form action="/listings" method="GET" className="anim-fade-up anim-d3 hidden md:flex gap-3 max-w-xl">
               <div className="relative flex-1">
                 <Search size={17} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input name="search" type="text"
@@ -186,7 +187,7 @@ export default async function HomePage() {
           </div>
 
           {/* Right — GGMP logo, hidden on mobile */}
-          <div className="hidden lg:flex shrink-0 items-center justify-center">
+          <div className="anim-scale-in anim-d2 hidden lg:flex shrink-0 items-center justify-center">
             <Image
               src="https://res.cloudinary.com/dapowzg6d/image/upload/v1778814576/cc0f0a63-9754-45ca-b547-3cb0f0a98e02_x6mckj.jpg"
               alt="GGMP Global Gem Market Place"
@@ -226,7 +227,7 @@ export default async function HomePage() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-5 gap-2 sm:gap-4">
+        <div className="stagger grid grid-cols-4 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-5 gap-2 sm:gap-4">
           {CATEGORIES.map((cat) => (
             <Link
               key={cat.name}
@@ -270,11 +271,11 @@ export default async function HomePage() {
         </div>
 
         {listings.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <Reveal stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {listings.map((listing) => (
               <ListingCard key={listing.id} listing={listing} />
             ))}
-          </div>
+          </Reveal>
         ) : (
           <div className="text-center py-16 text-gray-500">
             <Gem size={40} className="mx-auto mb-3 text-gray-300" />
@@ -296,7 +297,7 @@ export default async function HomePage() {
       <section className="bg-white border-y border-gray-200 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-xl font-semibold text-gray-900 mb-8 text-center">How GemMarket works</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <Reveal stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
               { icon: <Gem size={22} />,           step: '01', title: 'Create an account',    desc: 'Register free in under a minute. No subscription needed.' },
               { icon: <Search size={22} />,        step: '02', title: 'Post your listing',    desc: 'Upload photos, set gem specs, price, and your WhatsApp number/ Telegram / Line.' },
@@ -310,7 +311,7 @@ export default async function HomePage() {
                 <p className="text-sm text-gray-500 leading-relaxed">{desc}</p>
               </div>
             ))}
-          </div>
+          </Reveal>
         </div>
       </section>
     </div>

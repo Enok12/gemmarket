@@ -10,6 +10,7 @@ import WhatsAppButton from '@/components/WhatsAppButton'
 import ContactGate from '@/components/ContactGate'
 import ShareButton from '@/components/ShareButton'
 import ImageGallery from '@/components/ImageGallery'
+import Reveal from '@/components/Reveal'
 import {
   MapPin, Scale, Shield, ShieldOff,
   ArrowLeft, Award, Layers, Scissors, Globe, Calendar, CheckCircle, XCircle, Flame
@@ -104,7 +105,7 @@ export default async function ListingDetailPage({ params }) {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-sm text-gray-500 mb-6 flex-wrap">
+      <nav className="anim-fade-in flex items-center gap-2 text-sm text-gray-500 mb-6 flex-wrap">
         <Link href="/"        className="hover:text-gray-700">Home</Link>
         <span>/</span>
         <Link href="/listings" className="hover:text-gray-700">Listings</Link>
@@ -116,7 +117,7 @@ export default async function ListingDetailPage({ params }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
         {/* ── Left: images ── */}
-        <div className="lg:col-span-3">
+        <div className="anim-fade-in lg:col-span-3">
           <ImageGallery images={listing.images} title={listing.title} />
 
           {/* Video player */}
@@ -142,7 +143,7 @@ export default async function ListingDetailPage({ params }) {
         </div>
 
         {/* ── Right: details ── */}
-        <div className="lg:col-span-2 space-y-5">
+        <div className="stagger lg:col-span-2 space-y-5">
 
           {/* Badges + title */}
           <div>
@@ -351,15 +352,17 @@ export default async function ListingDetailPage({ params }) {
       </div>
 
       {/* Safety tips */}
-      <div className="mt-12 bg-amber-50 border border-amber-200 rounded-xl p-5">
-        <h3 className="text-sm font-semibold text-amber-900 mb-2">Safety tips</h3>
-        <ul className="text-sm text-amber-800 space-y-1 list-disc list-inside">
-          <li>Always meet in a safe, public location when buying in person</li>
-          <li>Request a gemological certificate before any large purchase</li>
-          <li>Never send money in advance before inspecting the gemstone</li>
-          <li>GGMP does not handle payments — transact at your own discretion</li>
-        </ul>
-      </div>
+      <Reveal className="mt-12">
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-5">
+          <h3 className="text-sm font-semibold text-amber-900 mb-2">Safety tips</h3>
+          <ul className="text-sm text-amber-800 space-y-1 list-disc list-inside">
+            <li>Always meet in a safe, public location when buying in person</li>
+            <li>Request a gemological certificate before any large purchase</li>
+            <li>Never send money in advance before inspecting the gemstone</li>
+            <li>GGMP does not handle payments — transact at your own discretion</li>
+          </ul>
+        </div>
+      </Reveal>
     </div>
   )
 }

@@ -16,7 +16,7 @@ const createSchema = z.object({
   carat:          z.number().positive(),
   color:          z.string().min(1),
   clarity:        z.string().optional(),
-  cut:            z.string().min(1),
+  cut:            z.string().min(1).nullable().optional(),
   treatment:      z.string().optional(),
   origin:         z.string().optional(),
   description:    z.string().min(20),
@@ -116,6 +116,12 @@ export async function POST(req) {
     const body   = await req.json()
     const parsed = createSchema.safeParse(body)
     if (!parsed.success) return apiError(parsed.error.errors[0].message, 422)
+
+    // Cut is only meaningful (and mandatory) for cut & polished stones.
+    if (parsed.data.stoneType === 'CUT_AND_POLISHED' && !parsed.data.cut) {
+      return apiError('Select a cut type for cut & polished stones', 422)
+    }
+    if (parsed.data.stoneType === 'ROUGH') parsed.data.cut = null
 
     const { images, videos, ...listingData } = parsed.data
 

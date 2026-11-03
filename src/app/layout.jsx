@@ -46,7 +46,7 @@ export default function RootLayout({ children }) {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
               <p className="text-sm text-gray-500">© {new Date().getFullYear()} GGMP · World's #1 Gemstone Marketplace</p>
               <div className="flex gap-6 text-sm text-gray-500">
-                <a href="https://www.cgt.onl/about" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900">About</a>
+                <a href="/about" className="hover:text-gray-900">About</a>
                 <a href="/privacy" className="hover:text-gray-900">Privacy</a>
                 <a href="#" className="hover:text-gray-900">Terms</a>
               </div>

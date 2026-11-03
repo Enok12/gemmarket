@@ -113,7 +113,7 @@ export default function DashboardPage() {
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="anim-fade-up flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">My Dashboard</h1>
           <p className="text-sm text-gray-500 mt-0.5">Welcome back, {user.name}</p>
@@ -125,7 +125,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Stats grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="stagger grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {[
           { label: 'Total listings', value: listings.length, icon: <Package size={18} />,       color: 'text-gray-500' },
           { label: 'Live listings',  value: approved,        icon: <Eye size={18} />,            color: 'text-green-600' },
@@ -143,7 +143,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Listings table */}
-      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+      <div className="anim-fade-up anim-d2 bg-white border border-gray-200 rounded-xl overflow-hidden">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-6 py-4 border-b border-gray-100">
           <h2 className="text-sm font-semibold text-gray-900">
             My listings
@@ -192,7 +192,7 @@ export default function DashboardPage() {
             <p className="text-sm text-gray-400 mt-1">Try a different name or carat weight</p>
           </div>
         ) : (
-          <div className="divide-y divide-gray-100">
+          <div className="stagger divide-y divide-gray-100">
             {pageListings.map((listing) => (
               <div key={listing.id}
                 className="flex items-center gap-4 px-6 py-4 hover:bg-gray-50 transition-colors">
@@ -299,7 +299,7 @@ export default function DashboardPage() {
 
       {/* Tips */}
       {listings.length > 0 && (
-        <div className="mt-6 bg-gem-50 border border-gem-100 rounded-xl p-4">
+        <div className="anim-fade-up mt-6 bg-gem-50 border border-gem-100 rounded-xl p-4">
           <div className="flex items-start gap-3">
             <TrendingUp size={16} className="text-gem-600 mt-0.5 shrink-0" />
             <div>

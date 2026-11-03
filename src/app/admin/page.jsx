@@ -136,7 +136,7 @@ const { user, token, isAdmin, isLoading } = useAuth()
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
    {/* Header */}
-    <div className="flex items-center justify-between mb-8">
+    <div className="anim-fade-up flex items-center justify-between mb-8">
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 bg-gem-600 rounded-xl flex items-center justify-center">
           <ShieldCheck size={20} className="text-white" />
@@ -157,7 +157,7 @@ const { user, token, isAdmin, isLoading } = useAuth()
     </div>
 
       {/* Stats cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+      <div className="stagger grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
         {[
           { label: 'Total',    value: stats.total,    icon: <BarChart3 size={16} />,     color: 'text-gray-600'   },
           { label: 'Pending',  value: stats.pending,  icon: <Clock size={16} />,         color: 'text-amber-600'  },
@@ -175,7 +175,7 @@ const { user, token, isAdmin, isLoading } = useAuth()
       </div>
 
       {/* Tab bar + search */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+      <div className="anim-fade-up anim-d2 flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
       <div className="flex gap-1 p-1 bg-gray-100 rounded-xl w-fit">
         {TABS.map(({ key, label, statKey }) => (
           <button
@@ -239,7 +239,7 @@ const { user, token, isAdmin, isLoading } = useAuth()
             <p className="text-sm text-gray-400 mt-1">Try a different name or carat weight</p>
           </div>
         ) : (
-          <div className="divide-y divide-gray-100">
+          <div className="stagger divide-y divide-gray-100">
             {pageListings.map((listing) => (
               <div key={listing.id}
                 className="flex items-start gap-4 p-5 hover:bg-gray-50 transition-colors">

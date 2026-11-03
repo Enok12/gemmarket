@@ -26,7 +26,7 @@ const schema = z.object({
   carat:          z.number({ invalid_type_error: 'Enter a valid carat weight' }).positive(),
   color:          z.string().min(1),
   clarity:        z.string().optional(),
-  cutType:        z.string().min(1, 'Select a cut type'),
+  cutType:        z.string().optional(),   // required only for cut & polished (see refine below)
   cutOther:       z.string().optional(),
   treatment:      z.string().optional(),
   origin:         z.string().optional(),
@@ -45,6 +45,9 @@ const schema = z.object({
 }).refine((d) => d.priceOnInquiry || (typeof d.price === 'number' && d.price > 0), {
   message: 'Enter a valid price or select Price on Inquiry',
   path: ['price'],
+}).refine((d) => d.stoneType !== 'CUT_AND_POLISHED' || !!d.cutType, {
+  message: 'Select a cut type',
+  path: ['cutType'],
 }).refine((d) => d.cutType !== 'Other' || (d.cutOther && d.cutOther.trim().length > 0), {
   message: 'Enter the cut type',
   path: ['cutOther'],
@@ -75,11 +78,21 @@ export default function EditListingPage() {
   const [video, setVideo]   = useState(null)   // ← add this
 
 
-  const { register, handleSubmit, reset, control, watch, setValue, formState: { errors, isDirty } } = useForm({
+  const { register, handleSubmit, reset, control, watch, setValue, clearErrors, formState: { errors, isDirty } } = useForm({
     resolver: zodResolver(schema),
   })
   const priceOnInquiry = watch('priceOnInquiry')
   const cutType        = watch('cutType')
+  // Rough stones have no cut — clear it (and any validation error) when Rough is chosen.
+  const stoneType = watch('stoneType')
+  const isRough   = stoneType === 'ROUGH'
+  useEffect(() => {
+    if (isRough) {
+      setValue('cutType', '')
+      setValue('cutOther', '')
+      clearErrors(['cutType', 'cutOther'])
+    }
+  }, [isRough, setValue, clearErrors])
   const primaryContact = watch('primaryContact') || user?.primaryContact || 'WHATSAPP'
   const enforceContact = watch('enforceContact') !== false
 
@@ -165,7 +178,7 @@ export default function EditListingPage() {
         },
         body: JSON.stringify({
           ...data,
-          cut:      data.cutType === 'Other' ? data.cutOther.trim() : data.cutType,
+          cut:      data.stoneType === 'ROUGH' ? null : (data.cutType === 'Other' ? data.cutOther.trim() : data.cutType),
           price:    data.priceOnInquiry ? null : data.price,
           images: images.map((img) => ({ imageUrl: img.url, publicId: img.publicId })),
           videos: video ? [{ videoUrl: video.url, publicId: video.publicId }] : [],
@@ -348,16 +361,18 @@ export default function EditListingPage() {
                 {CLARITY_OPTIONS.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
-            <div>
+            <div className={`transition-opacity duration-200 ${isRough ? 'opacity-40 pointer-events-none select-none' : ''}`}>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Cut <span className="text-red-500">*</span>
+                Cut {isRough
+                  ? <span className="text-gray-400 font-normal">(not applicable to rough stones)</span>
+                  : <span className="text-red-500">*</span>}
               </label>
-              <select {...register('cutType')} className="input-field">
+              <select {...register('cutType')} disabled={isRough} className="input-field">
                 <option value="">Select cut…</option>
                 {CUT_OPTIONS.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
               {errors.cutType && <p className="text-xs text-red-500 mt-1">{errors.cutType.message}</p>}
-              {cutType === 'Other' && (
+              {cutType === 'Other' && !isRough && (
                 <>
                   <input {...register('cutOther')} placeholder="Enter the cut type" className="input-field mt-2" />
                   {errors.cutOther && <p className="text-xs text-red-500 mt-1">{errors.cutOther.message}</p>}
