@@ -12,7 +12,11 @@ import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+})
 
 export const metadata = {
   title: "GGMP – World's 1# Gemstone Marketplace",
@@ -29,8 +33,8 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body className={`${inter.className} bg-gray-50 text-gray-900 antialiased`}>
+    <html lang="en" className={inter.variable}>
+      <body className={`${inter.className} font-sans bg-gray-50 text-gray-900 antialiased`}>
         <AuthProvider>
           <DeepLinkHandler />
           <PushRegistrar />
