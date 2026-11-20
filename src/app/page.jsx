@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma'
 import ListingCard from '@/components/ListingCard'
 import Reveal from '@/components/Reveal'
 import HomePostGemButton from '@/components/HomePostGemButton'
+import AppDownloadBanner from '@/components/AppDownloadBanner'
 import { Search, Shield, MessageCircle, Gem, ArrowRight, Star } from 'lucide-react'
 import { GEM_TYPES } from '@/lib/utils'
 
@@ -312,6 +313,9 @@ export default async function HomePage() {
           </Reveal>
         </div>
       </section>
+
+      {/* App download showcase banner (hidden on mobile) */}
+      <AppDownloadBanner />
     </div>
   )
 }

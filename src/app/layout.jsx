@@ -2,6 +2,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { AuthProvider } from '@/hooks/useAuth'
 import Navbar from '@/components/Navbar'
+import AppTopBanner from '@/components/AppTopBanner'
 import { Toaster } from 'react-hot-toast'
 import BottomNav from '@/components/BottomNav'
 import PageTransition from '@/components/PageTransition'
@@ -33,6 +34,7 @@ export default function RootLayout({ children }) {
         <AuthProvider>
           <DeepLinkHandler />
           <PushRegistrar />
+          <AppTopBanner />
           <Navbar />
             <main className="min-h-screen">
             <PageTransition>
