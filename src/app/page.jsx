@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { prisma } from '@/lib/prisma'
 import ListingCard from '@/components/ListingCard'
 import Reveal from '@/components/Reveal'
+import HomePostGemButton from '@/components/HomePostGemButton'
 import { Search, Shield, MessageCircle, Gem, ArrowRight, Star } from 'lucide-react'
 import { GEM_TYPES } from '@/lib/utils'
 
@@ -157,10 +158,7 @@ export default async function HomePage() {
                 <div className="bg-gem-600 rounded-2xl p-5 md:p-12 text-center">
                   <h2 className="text-2xl font-bold text-white mb-2">Ready to buy or sell your gemstones?</h2>
                   <p className="text-gem-200 mb-2">Join hundreds of sellers reaching verified buyers every day.</p>
-                  <Link href="/register"
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-white text-gem-700 font-semibold text-lg rounded-xl hover:bg-gem-50 transition-colors">
-                    Post your GEM — it's free 
-                  </Link>
+                  <HomePostGemButton />
                 </div>
               </section>
               
