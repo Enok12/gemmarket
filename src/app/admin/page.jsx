@@ -53,20 +53,25 @@ const { user, token, isAdmin, isLoading } = useAuth()
   async function loadAll() {
     setLoading(true)
     try {
-      const res  = await fetch('/api/admin/listings?limit=1000', {
+      const res  = await fetch('/api/admin/listings?limit=5000', {
         headers: { Authorization: `Bearer ${token}` },
       })
       const data = await res.json()
       if (data.success) {
-        const all = data.data.listings
-        setStats({
-          total:    all.length,
-          pending:  all.filter((l) => l.status === 'PENDING').length,
-          approved: all.filter((l) => l.status === 'APPROVED').length,
-          rejected: all.filter((l) => l.status === 'REJECTED').length,
-          clicks:   all.reduce((s, l) => s + (l.tracking?.whatsappClicks ?? 0), 0),
-        })
-        setListings(all.filter((l) => l.status === tab))
+        if (data.data.stats) {
+          setStats(data.data.stats)
+        } else {
+          const all = data.data.listings
+          setStats({
+            total:    data.data.pagination?.total ?? all.length,
+            pending:  all.filter((l) => l.status === 'PENDING').length,
+            approved: all.filter((l) => l.status === 'APPROVED').length,
+            rejected: all.filter((l) => l.status === 'REJECTED').length,
+            clicks:   all.reduce((s, l) => s + (l.tracking?.whatsappClicks ?? 0), 0),
+            users:    0,
+          })
+        }
+        setListings(data.data.listings.filter((l) => l.status === tab))
       }
     } finally {
       setLoading(false)
@@ -76,11 +81,16 @@ const { user, token, isAdmin, isLoading } = useAuth()
   async function loadTab(status) {
     setLoading(true)
     try {
-      const res  = await fetch(`/api/admin/listings?status=${status}&limit=1000`, {
+      const res  = await fetch(`/api/admin/listings?status=${status}&limit=5000`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       const data = await res.json()
-      if (data.success) setListings(data.data.listings)
+      if (data.success) {
+        if (data.data.stats) {
+          setStats(data.data.stats)
+        }
+        setListings(data.data.listings)
+      }
     } finally {
       setLoading(false)
     }
@@ -157,13 +167,14 @@ const { user, token, isAdmin, isLoading } = useAuth()
     </div>
 
       {/* Stats cards */}
-      <div className="stagger grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+      <div className="stagger grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
         {[
-          { label: 'Total',    value: stats.total,    icon: <BarChart3 size={16} />,     color: 'text-gray-600'   },
-          { label: 'Pending',  value: stats.pending,  icon: <Clock size={16} />,         color: 'text-amber-600'  },
-          { label: 'Approved', value: stats.approved, icon: <CheckCircle size={16} />,   color: 'text-green-600'  },
-          { label: 'Rejected', value: stats.rejected, icon: <XCircle size={16} />,       color: 'text-red-600'    },
-          { label: 'WA clicks',value: stats.clicks,   icon: <MessageCircle size={16} />, color: 'text-gem-600'    },
+          { label: 'Total',     value: stats.total,    icon: <BarChart3 size={16} />,     color: 'text-gray-600'   },
+          { label: 'Pending',   value: stats.pending,  icon: <Clock size={16} />,         color: 'text-amber-600'  },
+          { label: 'Approved',  value: stats.approved, icon: <CheckCircle size={16} />,   color: 'text-green-600'  },
+          { label: 'Rejected',  value: stats.rejected, icon: <XCircle size={16} />,       color: 'text-red-600'    },
+          { label: 'WA clicks', value: stats.clicks,   icon: <MessageCircle size={16} />, color: 'text-gem-600'    },
+          { label: 'Users',     value: stats.users,    icon: <Users size={16} />,         color: 'text-blue-600'   },
         ].map(({ label, value, icon, color }) => (
           <div key={label} className="bg-white border border-gray-200 rounded-xl p-4">
             <div className={`flex items-center gap-1.5 ${color} text-xs font-medium mb-2`}>

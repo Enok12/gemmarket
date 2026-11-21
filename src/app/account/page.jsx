@@ -9,8 +9,8 @@ import { useAuth } from '@/hooks/useAuth'
 import toast from 'react-hot-toast'
 import {
   User, Mail, Phone, Shield, Calendar,
-  Edit3, Lock, Loader2, Package,
-  Eye, MessageCircle, Clock, CheckCircle,LogOut
+  Edit3, Lock, Loader2,
+  Clock, CheckCircle, LogOut
 } from 'lucide-react'
 
 import { useLogout } from '@/hooks/useLogout'
@@ -197,22 +197,6 @@ export default function AccountPage() {
         </div>
       </div>
 
-      {/* Stats */}
-      {profile?.stats && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
-          {[
-            { label: 'Total listings',  value: profile.stats.totalListings,   icon: <Package size={16} />,       color: 'text-gray-500'   },
-            { label: 'Live listings',   value: profile.stats.liveListings,    icon: <Eye size={16} />,           color: 'text-green-600'  },
-            { label: 'Pending',         value: profile.stats.pendingListings, icon: <Clock size={16} />,         color: 'text-amber-600'  },
-            { label: 'WhatsApp clicks', value: profile.stats.whatsappClicks,  icon: <MessageCircle size={16} />, color: 'text-gem-600'    },
-          ].map(({ label, value, icon, color }) => (
-            <div key={label} className="bg-white border border-gray-200 rounded-xl p-4">
-              <div className={`flex items-center gap-1.5 ${color} text-xs mb-2`}>{icon}{label}</div>
-              <p className="text-2xl font-bold text-gray-900">{value}</p>
-            </div>
-          ))}
-        </div>
-      )}
 
       {/* Tabs */}
       <div className="flex gap-1 p-1 bg-gray-100 rounded-xl w-fit mb-6">

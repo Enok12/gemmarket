@@ -39,11 +39,27 @@ export async function GET(req) {
     if (!user) return apiError('User not found', 404)
 
     // Calculate stats
-    const stats = {
-      totalListings:   user.listings.length,
-      liveListings:    user.listings.filter((l) => l.status === 'APPROVED').length,
-      pendingListings: user.listings.filter((l) => l.status === 'PENDING').length,
-      whatsappClicks:  user.listings.reduce((s, l) => s + (l.tracking?.whatsappClicks ?? 0), 0),
+    let stats
+    if (user.role === 'ADMIN') {
+      const [liveCount, totalCount, pendingCount, clicksAgg] = await Promise.all([
+        prisma.listing.count({ where: { status: 'APPROVED' } }),
+        prisma.listing.count(),
+        prisma.listing.count({ where: { status: 'PENDING' } }),
+        prisma.tracking.aggregate({ _sum: { whatsappClicks: true } }).catch(() => ({ _sum: { whatsappClicks: 0 } })),
+      ])
+      stats = {
+        totalListings:   totalCount,
+        liveListings:    liveCount,
+        pendingListings: pendingCount,
+        whatsappClicks:  clicksAgg?._sum?.whatsappClicks ?? 0,
+      }
+    } else {
+      stats = {
+        totalListings:   user.listings.length,
+        liveListings:    user.listings.filter((l) => l.status === 'APPROVED').length,
+        pendingListings: user.listings.filter((l) => l.status === 'PENDING').length,
+        whatsappClicks:  user.listings.reduce((s, l) => s + (l.tracking?.whatsappClicks ?? 0), 0),
+      }
     }
 
     return apiSuccess({ ...user, stats })

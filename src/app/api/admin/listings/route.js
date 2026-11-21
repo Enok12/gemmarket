@@ -17,7 +17,16 @@ export async function GET(req) {
 
     const where = status ? { status } : {}
 
-    const [listings, total] = await Promise.all([
+    const [
+      listings,
+      total,
+      totalCount,
+      pendingCount,
+      approvedCount,
+      rejectedCount,
+      clicksAgg,
+      usersCount,
+    ] = await Promise.all([
       prisma.listing.findMany({
         where,
         skip,
@@ -30,10 +39,26 @@ export async function GET(req) {
         },
       }),
       prisma.listing.count({ where }),
+      prisma.listing.count(),
+      prisma.listing.count({ where: { status: 'PENDING' } }),
+      prisma.listing.count({ where: { status: 'APPROVED' } }),
+      prisma.listing.count({ where: { status: 'REJECTED' } }),
+      prisma.tracking.aggregate({ _sum: { whatsappClicks: true } }).catch(() => ({ _sum: { whatsappClicks: 0 } })),
+      prisma.user.count(),
     ])
+
+    const stats = {
+      total:    totalCount,
+      pending:  pendingCount,
+      approved: approvedCount,
+      rejected: rejectedCount,
+      clicks:   clicksAgg?._sum?.whatsappClicks ?? 0,
+      users:    usersCount,
+    }
 
     return apiSuccess({
       listings,
+      stats,
       pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
     })
   } catch (err) {
